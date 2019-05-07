@@ -1,0 +1,2104 @@
+{
+  "NOD": [
+    {
+      "NAME": "NOD0",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD69",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.0,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD1",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD79",
+      "COORDINATES": [
+        0.0,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD2",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD4",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD69",
+      "OUT_AHEAD": "NOD7",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD3",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD5",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD69",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD4",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD92",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD2",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD5",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD8",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD3",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD6",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD79",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD73",
+      "OUT_LEFT": "NOD9",
+      "COORDINATES": [
+        0.8999999761581421,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD7",
+      "IN_BACK": "NOD2",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD73",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD8",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD127",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD5",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD70",
+      "COORDINATES": [
+        1.350000023841858,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD9",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD6",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD70",
+      "COORDINATES": [
+        1.350000023841858,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD10",
+      "IN_BACK": "NOD129",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD14",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD11",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD12",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD15",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD12",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD67",
+      "OUT_BACK": "NOD72",
+      "OUT_RIGHT": "NOD11",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD13",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD17",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD72",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD14",
+      "IN_BACK": "NOD10",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD20",
+      "OUT_LEFT": "NOD16",
+      "COORDINATES": [
+        0.8999999761581421,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD15",
+      "IN_BACK": "NOD11",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD20",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD16",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD14",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD65",
+      "COORDINATES": [
+        1.350000023841858,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD17",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD81",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD13",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD65",
+      "COORDINATES": [
+        1.350000023841858,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD18",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD71",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD80",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD19",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD23",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD82",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.1500000953674318,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD20",
+      "IN_BACK": "NOD15",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD84",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        1.7999999523162842
+      ]
+    },
+    {
+      "NAME": "NOD21",
+      "IN_BACK": "NOD131",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD85",
+      "COORDINATES": [
+        1.7999999523162842,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD22",
+      "IN_BACK": "NOD64",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD19",
+      "OUT_AHEAD": "NOD24",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD23",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD27",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD19",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD24",
+      "IN_BACK": "NOD22",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD28",
+      "COORDINATES": [
+        3.5999999046325685,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD25",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD87",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD29",
+      "COORDINATES": [
+        3.5999999046325685,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD26",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD29",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD61",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD27",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD106",
+      "OUT_BACK": "NOD61",
+      "OUT_RIGHT": "NOD23",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD28",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD24",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD59",
+      "COORDINATES": [
+        4.050000190734863,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD29",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD25",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD26",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD59",
+      "COORDINATES": [
+        4.050000190734863,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD30",
+      "IN_BACK": "NOD34",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD63",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD31",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD66",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD63",
+      "OUT_LEFT": "NOD39",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD32",
+      "IN_BACK": "NOD35",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD63",
+      "OUT_LEFT": "NOD41",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD33",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD36",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD68",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD34",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD37",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD68",
+      "OUT_AHEAD": "NOD30",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD35",
+      "IN_BACK": "NOD89",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD68",
+      "OUT_AHEAD": "NOD32",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD36",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD40",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD45",
+      "OUT_RIGHT": "NOD33",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD37",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD95",
+      "OUT_BACK": "NOD45",
+      "OUT_RIGHT": "NOD34",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD38",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD39",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD45",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD39",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD31",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD38",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD52",
+      "COORDINATES": [
+        4.050000190734863,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD40",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD62",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD36",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD52",
+      "COORDINATES": [
+        4.050000190734863,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD41",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD32",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD52",
+      "COORDINATES": [
+        4.050000190734863,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD42",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD125",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD43",
+      "COORDINATES": [
+        3.1500000953674318,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD43",
+      "IN_BACK": "NOD42",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD88",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD44",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD139",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD90",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.1500000953674318,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD45",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD38",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD93",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD46",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD47",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD94",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.400000095367432,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD47",
+      "IN_BACK": "NOD96",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD46",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.849999904632568,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD48",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD97",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD96",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.849999904632568,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD49",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD50",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD97",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.75,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD50",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD98",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD49",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.199999809265137,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD51",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD117",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD98",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD52",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD41",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD99",
+      "COORDINATES": [
+        4.5,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD53",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD138",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD100",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.300000190734863,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD54",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD100",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD55",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.300000190734863,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD55",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD54",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD56",
+      "COORDINATES": [
+        6.75,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD56",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD55",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD76",
+      "COORDINATES": [
+        7.199999809265137,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD57",
+      "IN_BACK": "NOD137",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD58",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD58",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD57",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD101",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.199999809265137,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD59",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD29",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD107",
+      "COORDINATES": [
+        4.5,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD60",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD130",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD112",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD61",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD27",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD118",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD62",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD118",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD40",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        1.7999999523162842
+      ]
+    },
+    {
+      "NAME": "NOD63",
+      "IN_BACK": "NOD32",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD119",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        1.7999999523162842
+      ]
+    },
+    {
+      "NAME": "NOD64",
+      "IN_BACK": "NOD119",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD22",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD65",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD17",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD120",
+      "COORDINATES": [
+        1.7999999523162842,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD66",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD121",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD31",
+      "COORDINATES": [
+        3.1500000953674318,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD67",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD123",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD12",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.7999999523162842,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD68",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD35",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD122",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.1500000953674318,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD69",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD3",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD0",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.44999998807907107,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD70",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD9",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD124",
+      "COORDINATES": [
+        1.7999999523162842,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD71",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD83",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD18",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.7999999523162842,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD72",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD13",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD126",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD73",
+      "IN_BACK": "NOD7",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD128",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD74",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD111",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD130",
+      "COORDINATES": [
+        7.199999809265137,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD75",
+      "IN_BACK": "NOD84",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD131",
+      "COORDINATES": [
+        0.8999999761581421,
+        0.8999999761581421
+      ]
+    },
+    {
+      "NAME": "NOD76",
+      "IN_BACK": "NOD56",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD132",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD77",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD99",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD138",
+      "COORDINATES": [
+        5.400000095367432,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD78",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD93",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD139",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD79",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD1",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD6",
+      "COORDINATES": [
+        0.44999998807907107,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD80",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD18",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD81",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        1.350000023841858
+      ]
+    },
+    {
+      "NAME": "NOD81",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD80",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD17",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        1.7999999523162842
+      ]
+    },
+    {
+      "NAME": "NOD82",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD19",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD83",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.700000047683716,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD83",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD82",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD71",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.25,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD84",
+      "IN_BACK": "NOD20",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD75",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        1.3499999046325684
+      ]
+    },
+    {
+      "NAME": "NOD85",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD21",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD86",
+      "COORDINATES": [
+        2.25,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD86",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD85",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD87",
+      "COORDINATES": [
+        2.700000047683716,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD87",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD86",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD25",
+      "COORDINATES": [
+        3.1499998569488527,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD88",
+      "IN_BACK": "NOD43",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD89",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD89",
+      "IN_BACK": "NOD88",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD35",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD90",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD44",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD91",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.700000047683716,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD91",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD90",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD92",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.25,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD92",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD91",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD4",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.8000000715255738,
+        4.949999809265137
+      ]
+    },
+    {
+      "NAME": "NOD93",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD45",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD78",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD94",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD46",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD95",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.950000286102295,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD95",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD94",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD37",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.5,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD96",
+      "IN_BACK": "NOD48",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD47",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.849999904632568,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD97",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD49",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD48",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.300000190734863,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD98",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD51",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD50",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.65000057220459,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD99",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD52",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD77",
+      "COORDINATES": [
+        4.949999809265137,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD100",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD53",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD54",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.300000190734863,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD101",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD58",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD102",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.75,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD102",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD101",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD103",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        6.299999713897705,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD103",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD102",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD104",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.849999904632568,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD104",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD103",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD105",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        5.399999618530273,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD105",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD104",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD106",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.949999809265137,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD106",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD105",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD27",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.5,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD107",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD59",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD108",
+      "COORDINATES": [
+        4.949999809265137,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD108",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD107",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD109",
+      "COORDINATES": [
+        5.400000095367432,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD109",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD108",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD110",
+      "COORDINATES": [
+        5.849999904632568,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD110",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD109",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD111",
+      "COORDINATES": [
+        6.300000190734863,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD111",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD110",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD74",
+      "COORDINATES": [
+        6.75,
+        0.0
+      ]
+    },
+    {
+      "NAME": "NOD112",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD60",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD113",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        1.350000023841858
+      ]
+    },
+    {
+      "NAME": "NOD113",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD112",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD114",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        1.7999999523162842
+      ]
+    },
+    {
+      "NAME": "NOD114",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD113",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD115",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD115",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD114",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD116",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD116",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD115",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD117",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD117",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD116",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD51",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        8.100000381469727,
+        3.5999999046325685
+      ]
+    },
+    {
+      "NAME": "NOD118",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD61",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD62",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        4.050000190734863,
+        1.350000023841858
+      ]
+    },
+    {
+      "NAME": "NOD119",
+      "IN_BACK": "NOD63",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD64",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.5999999046325685,
+        1.3499999046325684
+      ]
+    },
+    {
+      "NAME": "NOD120",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD65",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD121",
+      "COORDINATES": [
+        2.25,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD121",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD120",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD66",
+      "COORDINATES": [
+        2.700000047683716,
+        2.25
+      ]
+    },
+    {
+      "NAME": "NOD122",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD68",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD123",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.700000047683716,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD123",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "NOD122",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD67",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        2.25,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD124",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD70",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD125",
+      "COORDINATES": [
+        2.25,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD125",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD124",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD42",
+      "COORDINATES": [
+        2.700000047683716,
+        4.5
+      ]
+    },
+    {
+      "NAME": "NOD126",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD72",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD127",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD127",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD126",
+      "IN_LEFT": "none",
+      "OUT_BACK": "NOD8",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        1.350000023841858,
+        4.050000190734863
+      ]
+    },
+    {
+      "NAME": "NOD128",
+      "IN_BACK": "NOD73",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD129",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD129",
+      "IN_BACK": "NOD128",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD10",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        0.8999999761581421,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD130",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD74",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD60",
+      "COORDINATES": [
+        7.649999618530273,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD131",
+      "IN_BACK": "NOD75",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD21",
+      "COORDINATES": [
+        1.350000023841858,
+        0.44999998807907107
+      ]
+    },
+    {
+      "NAME": "NOD132",
+      "IN_BACK": "NOD76",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD133",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        3.6000001430511476
+      ]
+    },
+    {
+      "NAME": "NOD133",
+      "IN_BACK": "NOD132",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD134",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        3.1500000953674318
+      ]
+    },
+    {
+      "NAME": "NOD134",
+      "IN_BACK": "NOD133",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD135",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        2.700000286102295
+      ]
+    },
+    {
+      "NAME": "NOD135",
+      "IN_BACK": "NOD134",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD136",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        2.250000238418579
+      ]
+    },
+    {
+      "NAME": "NOD136",
+      "IN_BACK": "NOD135",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD137",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        1.8000001907348633
+      ]
+    },
+    {
+      "NAME": "NOD137",
+      "IN_BACK": "NOD136",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "NOD57",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        7.650000095367432,
+        1.3500001430511475
+      ]
+    },
+    {
+      "NAME": "NOD138",
+      "IN_BACK": "none",
+      "IN_RIGHT": "NOD77",
+      "IN_AHEAD": "none",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "none",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "NOD53",
+      "COORDINATES": [
+        5.849999904632568,
+        2.700000047683716
+      ]
+    },
+    {
+      "NAME": "NOD139",
+      "IN_BACK": "none",
+      "IN_RIGHT": "none",
+      "IN_AHEAD": "NOD78",
+      "IN_LEFT": "none",
+      "OUT_BACK": "none",
+      "OUT_RIGHT": "NOD44",
+      "OUT_AHEAD": "none",
+      "OUT_LEFT": "none",
+      "COORDINATES": [
+        3.6000001430511476,
+        4.5
+      ]
+    }
+  ]
+}

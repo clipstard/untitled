@@ -1,0 +1,5 @@
+*.mp4
+*.jpeg
+*.png
+.idea/
+venv/
