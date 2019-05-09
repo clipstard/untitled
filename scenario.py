@@ -51,3 +51,19 @@ angle = 0.0
 forward(default_speed, 0.0)
 wait(1.5)
 stop(0.0)
+
+
+def region_of_interest(image):
+    height = image.shape[0]
+    width = image.shape[1]
+    polygons = np.array([
+        [(-100, height),(0+int(width/4),0+int(height/5)),(width-int(width/4),0+int(height/5)), (width+100, height)]
+    ])
+    vid = np.array([
+        [(0, height), (width, height), (int(width / 2), height-int(height/3))]
+    ])
+    mask = np.zeros_like(image)
+    cv2.fillPoly(mask, polygons, 255)
+    # cv2.fillPoly(mask, vid, 0)
+    masked_image = cv2.bitwise_and(image, mask)
+    return masked_image
