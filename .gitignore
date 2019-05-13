@@ -1,5 +1,8 @@
 *.mp4
 *.jpeg
 *.png
+*.mkv
+img/
+screencasts/
 .idea/
 venv/
