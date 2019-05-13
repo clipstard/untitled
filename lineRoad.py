@@ -222,51 +222,51 @@ def line_compare(line1, line2):
     return None
 
 
-image = cv2.imread('img/26.png')
-lane_image = np.copy(image)
-canny_image = canny(lane_image)
-cropped_image = region_of_interest(canny_image)
-cv2.imshow('asda', cropped_image)
-lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 150, np.array([]), maxLineGap=10, minLineLength=25)
-print_lines(lines)
-averaged_lines = average_slope_intercept(lane_image, lines)
-
-
-if averaged_lines is not None:
-    line_image = display_lines(lane_image, lines)
-
-    combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
-    cv2.imshow("resultq", combo_image)
-    # cv2.imshow("resultqq", combo_image)
-cv2.waitKey(0)
+# image = cv2.imread('img/26.png')
+# lane_image = np.copy(image)
+# canny_image = canny(lane_image)
+# cropped_image = region_of_interest(canny_image)
+# cv2.imshow('asda', cropped_image)
+# lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 150, np.array([]), maxLineGap=10, minLineLength=25)
+# print_lines(lines)
+# averaged_lines = average_slope_intercept(lane_image, lines)
+#
+#
+# if averaged_lines is not None:
+#     line_image = display_lines(lane_image, lines)
+#
+#     combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
+#     cv2.imshow("resultq", combo_image)
+#     # cv2.imshow("resultqq", combo_image)
+# cv2.waitKey(0)
 
 # afisarea imaginii in axele x si y, pentru a determina virfurile la triunghiul de detectarea liniilor,
 # pentru region_of_interest:
 #
 
-# last_lines = np.array([[], []])
-# # cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture('video5.mp4')
-# while (cap.isOpened()):
-#     _, frame = cap.read()
-#     canny_image = canny(frame)
-#     cropped_image = region_of_interest(canny_image)
-#     lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 100, np.array([]), maxLineGap=5, minLineLength=40)
-#
-#     averaged_lines = average_slope_intercept(frame, lines)
-#     print(averaged_lines[0], 'avg_lines', averaged_lines[1])
-#     line_image = display_lines(frame, averaged_lines)
-#     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-#     cv2.imshow("result", combo_image)
-#     # cv2.imshow("result1", cropped_image)
-#     key = cv2.waitKey(1)
-#     if key == ord('g'):
-#         while True:
-#             c_key = cv2.waitKey(1)
-#             if c_key == ord('g'):
-#                 break
-#             time.sleep(1)
-#     if key == ord('q'):
-#         break
-# cap.release()
-# cv2.destroyAllWindows()
+last_lines = np.array([[], []])
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('screencasts/12b.mkv')
+while (cap.isOpened()):
+    _, frame = cap.read()
+    canny_image = canny(frame)
+    cropped_image = region_of_interest(canny_image)
+    lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 100, np.array([]), maxLineGap=5, minLineLength=40)
+
+    averaged_lines = average_slope_intercept(frame, lines)
+
+    line_image = display_lines(frame, averaged_lines)
+    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+    cv2.imshow("result", combo_image)
+    # cv2.imshow("result1", cropped_image)
+    key = cv2.waitKey(1)
+    if key == ord('g'):
+        while True:
+            c_key = cv2.waitKey(1)
+            if c_key == ord('g'):
+                break
+            time.sleep(1)
+    if key == ord('q'):
+        break
+cap.release()
+cv2.destroyAllWindows()

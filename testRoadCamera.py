@@ -4,7 +4,14 @@ import numpy as np
 import time
 import constant
 import threading
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640, 480))
+time.sleep(0.1)
 listen_to_lines = True
 const_actions = [
     constant.RIGHT,
@@ -561,45 +568,13 @@ def down_equation(previous_value):
         return num
 
 
-# image = cv2.imread('img/supertest.jpg')
-# # image = cv2.imread('img/30.png')
-# lane_image = np.copy(image)
-# canny_image = canny(lane_image)
-# cropped_image = region_of_interest(canny_image)
-# cv2.imshow('asda', cropped_image)
-# lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
-#
-# lines = reduce_invalid(lines)
-# lines = reduce_horizontals2(lines)
-#
-# # print_lines(lines)
-# averaged_lines, lines_interrupted = average_slope_intercept(cropped_image, lines)
-#
-# left_is_interrupted, right_is_interrupted = lines_interrupted
-#
-# if averaged_lines is not None:
-#     line_image = display_average_lines(lane_image, averaged_lines, lines_interrupted)
-#     combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
-#     cv2.imshow("resultq", combo_image)
-#     # cv2.imshow("resultqq", combo_image)
-# cv2.waitKey(0)
-
-# afisarea imaginii in axele x si y, pentru a determina virfurile la triunghiul de detectarea liniilor,
-# pentru region_of_interest:
-#
-
-
 last_lines = []
-count = 0
-# cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture('video5.mp4')
-cap = cv2.VideoCapture('screencasts/12.mkv')
-# cap = cv2.VideoCapture('homerace.mkv')
 speed = 15.0
 angle = 0.0
+count = 0
 decision = 0.0
-while (cap.isOpened()):
-    _, frame = cap.read()
+for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    frame = camera_frame.array
     if listen_to_lines:
         canny_image = canny(frame)
         cropped_image = region_of_interest(canny_image)
@@ -614,9 +589,7 @@ while (cap.isOpened()):
             to_check_lines = make_average_lines(last_lines, averaged_lines)
             last_lines = averaged_lines
             line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-            # line_image = display_lines(frame, lines)
             combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-            # cv2.imshow("masked", cropped_image)
             cv2.imshow("result", combo_image)
         else:
             if count < 2:
@@ -650,5 +623,6 @@ while (cap.isOpened()):
             break
     else:
         cv2.imshow("result", frame)
+    rawCapture.truncate(0)
 cap.release()
 cv2.destroyAllWindows()
