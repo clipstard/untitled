@@ -36,8 +36,13 @@ def custom_wait(seconds):
     while time.time() < now + seconds:
         pass
 
-def forward(speed, angle):
+
+def forward(speed, angle=0.0):
     print("I\'m moving forward with %d speed and %d angle" % (speed, angle))
+
+
+def stop(angle=0.0):
+    do_nothing()
 
 
 def move_in_intersection(direction):
@@ -468,8 +473,8 @@ def region_of_interest(image):
     width = image.shape[1]
     polygons = np.array([
         [(-100, height),
-         (0 + int(width / 4), 0 + int(height / 3)),
-         (width - int(width / 4), 0 + int(height / 3)),
+         (0 + int(width / 4), 0 + int(height / 2)),
+         (width - int(width / 4), 0 + int(height / 2)),
          (width + 100, height)]
     ])
     vid = np.array([
@@ -568,13 +573,71 @@ def down_equation(previous_value):
         return num
 
 
+def down_angle(coefficient):
+    global angle_coefficient
+    coef = abs(coefficient)
+    value = coef * angle_coefficient
+    if value > 23:
+        value = 23
+    return -float(value)
+
+
+def up_angle(coefficient):
+    global angle_coefficient
+    coef = abs(coefficient)
+    value = coef * angle_coefficient
+    if value > 23:
+        value = 23
+    return float(value)
+
+
+def do_nothing():
+    return None
+
+
+def prepare_speed(c_angle):
+    value = 15.0
+    if c_angle < -20:
+        value = 21.0
+    elif c_angle < -18:
+        value = 20.0
+    elif c_angle < -16:
+        value = 19.0
+    elif c_angle < -14:
+        value = 18.0
+    elif c_angle < -12:
+        value = 17.0
+    elif c_angle < -10:
+        value = 16.0
+    elif c_angle > 20:
+        value = 20.0
+    elif c_angle > 18:
+        value = 19.0
+    elif c_angle > 16:
+        value = 18.0
+    elif c_angle > 14:
+        value = 17.0
+    elif c_angle > 12:
+        value = 16.0
+    return value
+
+
+count = 0
 last_lines = []
 speed = 15.0
 angle = 0.0
-count = 0
 decision = 0.0
+action_index = 0
+max = 0
+min = 100
+angle_coefficient = 13.5
+is_brake = False
 for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     frame = camera_frame.array
+    if not is_brake:
+        forward(speed, angle)
+    else:
+        stop(angle)
     if listen_to_lines:
         canny_image = canny(frame)
         cropped_image = region_of_interest(canny_image)
@@ -603,11 +666,27 @@ for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_vide
                 cv2.imshow("result", frame)
         if to_check_lines is not None:
             calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
-            print(calculated_angle)
-            if calculated_angle > 0:
-                decision = equation(decision)
+            if -2 < calculated_angle < 2:
+                print(calculated_angle, 'before')
+            if len(to_check_lines) == 3:
+                line = to_check_lines[2]
+                x1, y1, x2, y2 = line
+                if y2 >= height * 0.8 or y1 >= height * 0.8:
+                    x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
+                    x.start()
+                    y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
+                    y.start()
+                    action_index += 1
+                    if action_index == len(const_actions):
+                        action_index = 0
+            if -0.1 < calculated_angle < 0.1:
+                angle = 0.0
             else:
-                decision = down_equation(decision)
+                if calculated_angle < 0:
+                    angle = down_angle(calculated_angle)
+                else:
+                    angle = up_angle(calculated_angle)
+            speed = prepare_speed(angle)
 
         key = cv2.waitKey(1)
         if key == ord('p'):

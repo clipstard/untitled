@@ -37,22 +37,22 @@ def move_in_intersection(direction):
     global listen_to_lines
     listen_to_lines = False
     if direction == constant.LEFT:
-        wait(1.0)
+        # wait(1.0)
         listen_to_lines = True
     elif direction == constant.RIGHT:
-        wait(1.0)
+        # wait(1.0)
         listen_to_lines = True
     elif direction == constant.FORWARD:
-        wait(1.0)
+        # wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP:
         for i in range(0, 3):
-            print("%d," % i+1)
-            wait(1.0)
+            print("%d," % (i+1))
+            # wait(1.0)
         print('go')
         listen_to_lines = True
     else:
-        wait(4.0)
+        # wait(4.0)
         listen_to_lines = True
     return True
 
@@ -273,7 +273,6 @@ def make_average_coordinates(lines):
     lines = de_array(lines)
     if isinstance(lines, list) and len(lines) == 4 and not isinstance(lines[0], list):
         lines = normalize_line(lines)
-    print(lines, 'incoming lines')
     for line in lines:
         line = normalize_line(line)
         if line is None:
@@ -513,14 +512,11 @@ def make_average_lines(last_lines, current_lines):
             last_lines.append(None)
             last_lines = np.array(last_lines)
     for i in range(0, len(current_lines)):
-        print(i, 'i')
         if current_lines[i] is None and last_lines[i] is not None:
             aux.append(normalize_line(convert_numpy_to_array(last_lines[i])))
         elif current_lines[i] is not None and last_lines[i] is None:
             aux.append(normalize_line(convert_numpy_to_array(current_lines[i])))
         else:
-            print(last_lines[i], current_lines[i], 'with i')
-            print(last_lines, current_lines, 'yoyoyo')
             aux.append(normalize_line(convert_numpy_to_array(make_average_coordinates([last_lines[i], current_lines[i]]))))
     return np.array(de_array(aux))
 
@@ -561,6 +557,54 @@ def down_equation(previous_value):
         return num
 
 
+def down_angle(coefficient):
+    global angle_coefficient
+    coef = abs(coefficient)
+    value = coef * angle_coefficient
+    if value > 23:
+        value = 23
+    return -float(value)
+
+
+def up_angle(coefficient):
+    global angle_coefficient
+    coef = abs(coefficient)
+    value = coef * angle_coefficient
+    if value > 23:
+        value = 23
+    return float(value)
+
+
+def do_nothing():
+    return None
+
+
+def prepare_speed(c_angle):
+    value = 15.0
+    if c_angle < -20:
+        value = 21.0
+    elif c_angle < -18:
+        value = 20.0
+    elif c_angle < -16:
+        value = 19.0
+    elif c_angle < -14:
+        value = 18.0
+    elif c_angle < -12:
+        value = 17.0
+    elif c_angle < -10:
+        value = 16.0
+    elif c_angle > 20:
+        value = 20.0
+    elif c_angle > 18:
+        value = 19.0
+    elif c_angle > 16:
+        value = 18.0
+    elif c_angle > 14:
+        value = 17.0
+    elif c_angle > 12:
+        value = 16.0
+    return value
+
 # image = cv2.imread('img/supertest.jpg')
 # # image = cv2.imread('img/30.png')
 # lane_image = np.copy(image)
@@ -593,13 +637,18 @@ last_lines = []
 count = 0
 # cap = cv2.VideoCapture(0)
 # cap = cv2.VideoCapture('video5.mp4')
-cap = cv2.VideoCapture('screencasts/12.mkv')
+cap = cv2.VideoCapture('screencasts/12b.mkv')
 # cap = cv2.VideoCapture('homerace.mkv')
 speed = 15.0
 angle = 0.0
 decision = 0.0
-while (cap.isOpened()):
+action_index = 0
+max = 0
+min = 100
+angle_coefficient = 13.5
+while cap.isOpened():
     _, frame = cap.read()
+    forward(speed, angle)
     if listen_to_lines:
         canny_image = canny(frame)
         cropped_image = region_of_interest(canny_image)
@@ -630,11 +679,27 @@ while (cap.isOpened()):
                 cv2.imshow("result", frame)
         if to_check_lines is not None:
             calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
-            print(calculated_angle)
-            if calculated_angle > 0:
-                decision = equation(decision)
+            if -2 < calculated_angle < 2:
+                print(calculated_angle, 'before')
+            if len(to_check_lines) == 3:
+                line = to_check_lines[2]
+                x1, y1, x2, y2 = line
+                if y2 >= height * 0.8 or y1 >= height * 0.8:
+                    x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
+                    x.start()
+                    y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
+                    y.start()
+                    action_index += 1
+                    if action_index == len(const_actions):
+                        action_index = 0
+            if -0.1 < calculated_angle < 0.1:
+                angle = 0.0
             else:
-                decision = down_equation(decision)
+                if calculated_angle < 0:
+                    angle = down_angle(calculated_angle)
+                else:
+                    angle = up_angle(calculated_angle)
+            speed = prepare_speed(angle)
 
         key = cv2.waitKey(1)
         if key == ord('p'):
@@ -652,3 +717,5 @@ while (cap.isOpened()):
         cv2.imshow("result", frame)
 cap.release()
 cv2.destroyAllWindows()
+print(max, 'max')
+print(min, 'min')
