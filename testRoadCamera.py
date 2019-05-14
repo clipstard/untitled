@@ -13,7 +13,7 @@ serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
 serialHandler.startReadThread()
 camera = PiCamera()
 camera.resolution = (640, 480)
-camera.framerate = 32
+camera.framerate = 20
 rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 listen_to_lines = True
@@ -64,8 +64,24 @@ def after_stop_right():
     forward(speed, -1.0)
     wait(0.2)
     forward(18.0, 23.0)
-    wait(3.2)
+    wait(3.0)
     do_nothing()
+    
+    
+def parking_action():
+    forward(-19, 22)
+    wait(1.5)
+    forward(-17, 0)
+    wait(0.8)
+    forward(-21, -22)
+    wait(1.7)
+    forward(-19, 0)
+    wait(1.1)
+    stop()
+    wait(0.5)
+    forward(18, 0)
+    wait(2)
+    stop()
 
 
 def after_stop_forward():
@@ -517,16 +533,10 @@ def make_average_lines(last_lines, current_lines):
 def down_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
-    if coef < 0.2:
-        value = 1
-    elif coef < 0.3:
-        value = 2.5
-    elif coef < 0.4:
-        value = 3.5
-    elif coef < 0.5:
-        value = 4.75
+    if coef < 0.6:
+        value = 2
     elif 0.6 < coef < 1.0:
-        value = coef * 10
+        value = coef * 5
     elif coef < 1.1:
         value = 11.25
     elif coef < 1.2:
@@ -549,14 +559,8 @@ def down_angle(coefficient):
 def up_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
-    if coef < 0.2:
-        value = 1
-    elif coef < 0.3:
-        value = 2.5
-    elif coef < 0.4:
-        value = 3.5
-    elif coef < 0.5:
-        value = 4.75
+    if coef < 0.6:
+        value = 2
     elif 0.6 < coef < 1.0:
         value = coef * 10
     elif coef < 1.1:
@@ -639,21 +643,21 @@ try:
             if averaged_lines is not None:
                 to_check_lines = make_average_lines(last_lines, averaged_lines)
                 last_lines = averaged_lines
-                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-                cv2.imshow("result", combo_image)
+#                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
+#                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+#                cv2.imshow("result", combo_image)
             else:
                 if count < 2:
                     to_check_lines = last_lines
-                    line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-                    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-                    cv2.imshow("result", combo_image)
+#                    line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
+#                    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+#                    cv2.imshow("result", combo_image)
                     count += 1
-                else:
-                    cv2.imshow("result", frame)
+#                else:
+#                    cv2.imshow("result", frame)
             if to_check_lines is not None:
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
-                if -2 < calculated_angle < 2:
+                if -2.5 < calculated_angle < 2.5:
                     print(calculated_angle, 'before')
                 if len(to_check_lines) == 3:
                     line = to_check_lines[2]
@@ -673,7 +677,7 @@ try:
                 if -0.1 < calculated_angle < 0.1:
                     angle = 0.0
                 else:
-                    if -2 < calculated_angle < 2:
+                    if -2.5 < calculated_angle < 2.5:
                         if calculated_angle < 0:
                             angle = down_angle(calculated_angle)
                         else:
@@ -693,6 +697,7 @@ try:
                     time.sleep(1)
             if key == ord('q'):
                 break
+            cv2.imshow("result", frame)
         else:
             cv2.imshow("result", frame)
         rawCapture.truncate(0)
