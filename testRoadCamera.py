@@ -64,7 +64,7 @@ def after_stop_right():
     forward(speed, -1.0)
     wait(0.5)
     forward(18.0, 23.0)
-    wait(2.9)
+    wait(3.2)
     do_nothing()
 
 
@@ -86,6 +86,7 @@ def move_in_intersection(direction):
         wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP:
+        stop()
         for i in range(0, 3):
             print("%d," % (i+1))
             wait(0.5)
@@ -547,38 +548,45 @@ def do_nothing():
 
 
 def prepare_speed(c_angle):
+    global base_speed
     if c_angle < -17:
-        value = 18.0
+        value = base_speed + 3
     elif c_angle < -13:
-        value = 17.0
+        value = base_speed + 2
     elif c_angle < -10:
-        value = 16.0
+        value = base_speed + 1
     elif c_angle < -8:
-        value = 15.0
+        value = base_speed
     elif c_angle > 18:
-        value = 18.0
+        value = base_speed + 3
     elif c_angle > 15:
-        value = 17.0
+        value = base_speed + 2
     elif c_angle > 12:
-        value = 16.0
+        value = base_speed + 1
     else:
-        value = 15.0
-    return value
+        value = base_speed
+    return float(value)
 
 
 count = 0
 last_lines = []
-speed = 15.0
+base_speed = 18.0
+speed = base_speed
 angle = 0.0
 decision = 0.0
 action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
+#after_stop_right()
 is_brake = False
+frame_count = 0
 try:
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         frame = camera_frame.array
+        frame_count += 1
+        if 10 < frame_count < 20:
+            base_speed = 16.0
         if not is_brake:
             forward(speed, angle)
         else:
@@ -620,14 +628,14 @@ try:
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
-                    if y2 >= height * 0.7 or y1 >= height * 0.7:
-                        x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
-                        x.start()
-                        y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
-                        y.start()
+                    if y2 >= height * 0.7 or \
+                       y1 >= height * 0.7 :
+                        print(y1, y2)
+                        move_in_intersection(constant.STOP)
+                        move_in_intersection(const_actions[action_index])
                         action_index += 1
                         if action_index == len(const_actions):
-                            action_index = 0
+                            break
                 if -0.1 < calculated_angle < 0.1:
                     angle = 0.0
                 else:
