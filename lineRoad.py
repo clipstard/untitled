@@ -113,9 +113,11 @@ def make_coordinates(image, line_parameters):
 
 
 def print_lines(lines):
+    count = 0
     for line in lines:
+        count += 1
         x1, y1, x2, y2 = line.reshape(4)
-        print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2)
+        print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2, 'count', count)
 
 
 def average_slope_intercept(image, lines):
@@ -153,18 +155,57 @@ def average_slope_intercept(image, lines):
 
 
 def canny(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    canny = cv2.Canny(blur, 0, 255)
+    canny = cv2.Canny(blur, 100, 255)
     return canny
 
 
 def display_lines(image, lines):
     line_imagez = np.zeros_like(image)
+<<<<<<< HEAD
+=======
+    print(lines, 'lines')
+    count = 0
+    colors = [
+        (255, 0, 0),
+        (100, 100, 100),
+        (0, 0, 0),
+        (255, 255, 255),
+        (0, 255, 0),
+        (255, 255, 0),
+        (0, 0, 255),
+        (0, 255, 255),
+        (255, 0, 255),
+        (100, 255, 0),
+        (255, 100, 0),
+        (255, 0, 100),
+        (100, 0, 255),
+        (255, 100, 255),
+        (100, 100, 0),
+        (255, 255, 100),
+        (100, 100, 255),
+        (100, 0, 100),
+        (50, 100, 255),
+        (50, 50, 50),
+        (255, 100, 50),
+        (50, 100, 0),
+        (255, 50, 0),
+        (255, 0, 50),
+        (255, 50, 50),
+        (100, 100, 50),
+        (50, 100, 100),
+        (0, 50, 0),
+        (0, 0, 50)
+    ]
+>>>>>>> ecbe647af52e489a696c96ffb0cdaa653932bda6
     if lines is not None:
-        # for line in lines:
-        for x1, y1, x2, y2 in lines:
-            cv2.line(line_imagez, (x1, y1), (x2, y2), (255, 0, 0), 20)
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                count +=1
+                if count > len(colors) - 1:
+                    count = count - len(colors)
+                cv2.line(line_imagez, (x1, y1), (x2, y2), colors[count], 5)
     return line_imagez
 
 
@@ -191,18 +232,18 @@ def line_compare(line1, line2):
     return None
 
 
-# image = cv2.imread('ultratest2.png')
+# image = cv2.imread('img/26.png')
 # lane_image = np.copy(image)
 # canny_image = canny(lane_image)
 # cropped_image = region_of_interest(canny_image)
-# # cv2.imshow('asda', cropped_image)
-# lines = cv2.HoughLinesP(cropped_image, 2, np.pi / 180, 200, np.array([]), maxLineGap=5, minLineLength=30)
+# cv2.imshow('asda', cropped_image)
+# lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 150, np.array([]), maxLineGap=10, minLineLength=25)
 # print_lines(lines)
 # averaged_lines = average_slope_intercept(lane_image, lines)
 #
 #
 # if averaged_lines is not None:
-#     line_image = display_lines(lane_image, averaged_lines)
+#     line_image = display_lines(lane_image, lines)
 #
 #     combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
 #     cv2.imshow("resultq", combo_image)
@@ -225,6 +266,7 @@ angle = 0.0
 
 last_lines = np.array([[], []])
 # cap = cv2.VideoCapture(0)
+<<<<<<< HEAD
 # cap = cv2.VideoCapture('video5.mp4')
 camera = PiCamera()
 camera.resolution = (800, 600)
@@ -233,13 +275,18 @@ rawCapture = PiRGBArray(camera, size=(800, 600))
 moveAllowed = True
 for image_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     frame = image_frame.array
+=======
+cap = cv2.VideoCapture('screencasts/12b.mkv')
+while (cap.isOpened()):
+    _, frame = cap.read()
+>>>>>>> ecbe647af52e489a696c96ffb0cdaa653932bda6
     canny_image = canny(frame)
     cropped_image = region_of_interest(canny_image)
     cv2.imshow("caa", cropped_image)
     lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 100, np.array([]), maxLineGap=5, minLineLength=40)
     print('mor')
     averaged_lines = average_slope_intercept(frame, lines)
-    print(averaged_lines[0], 'avg_lines', averaged_lines[1])
+
     line_image = display_lines(frame, averaged_lines)
     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
     cv2.imshow("result", combo_image)

@@ -1,0 +1,7 @@
+LEFT = 'left'
+RIGHT = 'right'
+FORWARD = 'forward'
+FREE_DRIVE = 'free_drive'
+STOP = 'stop'
+PARKING = 'parking'
+FINISH = 'finish'
