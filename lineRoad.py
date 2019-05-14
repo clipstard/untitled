@@ -2,6 +2,13 @@ import cv2
 import math
 import numpy as np
 import time
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import SerialHandler
+import threading
+
+serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
+serialHandler.startReadThread()
 
 
 def reduce_array(array, target):
@@ -154,7 +161,6 @@ def canny(image):
 
 def display_lines(image, lines):
     line_imagez = np.zeros_like(image)
-    print(lines, 'lines')
     if lines is not None:
         # for line in lines:
         for x1, y1, x2, y2 in lines:
@@ -165,22 +171,21 @@ def display_lines(image, lines):
 def region_of_interest(image):
     height = image.shape[0]
     width = image.shape[1]
-    print(width, height)
     polygons = np.array([
-        [
-            (width / 2 - width / 3, height - int(height / 3.5)),
-            (0, height),
-            (0, height - height / 2),
-            (width / 2, height / 5),  # mid
-            (width, height - height / 2),
-            (width, height),
-            (width - width / 5, height - int(height / 3.5))
-        ]
+        [(-100, height),
+         (0+int(width/4),0+int(height/5)),
+         (width-int(width/4),0+int(height/5)),
+         (width+100, height)]
+    ])
+    vid = np.array([
+        [(0, height), (width, height), (int(width / 2), height-int(height/3))]
     ])
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
+    cv2.fillPoly(mask, vid, 0)
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
+        
 
 def line_compare(line1, line2):
     return None
@@ -204,33 +209,95 @@ def line_compare(line1, line2):
 #     # cv2.imshow("resultqq", combo_image)
 # cv2.waitKey(0)
 
-# afisarea imaginii in axele x si y, pentru a determina virfurile la triunghiul de detectarea liniilor,
-# pentru region_of_interest:
-#
+time.sleep(0.1)
+def forward(pwm, angle=0.0):
+    serialHandler.sendMove(pwm, angle)
+    
+def stop(angle=0.0):
+    serialHandler.sendBrake(angle)
+    
+default_angle = 19.0
+default_large_angle = 23.0
+default_speed = 14.0
+speed = 15.0
+angle = 0.0
+
 
 last_lines = np.array([[], []])
 # cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture('video5.mp4')
-while (cap.isOpened()):
-    _, frame = cap.read()
+# cap = cv2.VideoCapture('video5.mp4')
+camera = PiCamera()
+camera.resolution = (800, 600)
+camera.framerate = 20
+rawCapture = PiRGBArray(camera, size=(800, 600))
+moveAllowed = True
+for image_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    frame = image_frame.array
     canny_image = canny(frame)
     cropped_image = region_of_interest(canny_image)
+    cv2.imshow("caa", cropped_image)
     lines = cv2.HoughLinesP(cropped_image, 10, np.pi / 180, 100, np.array([]), maxLineGap=5, minLineLength=40)
-
+    print('mor')
     averaged_lines = average_slope_intercept(frame, lines)
     print(averaged_lines[0], 'avg_lines', averaged_lines[1])
     line_image = display_lines(frame, averaged_lines)
     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
     cv2.imshow("result", combo_image)
+    rawCapture.truncate(0)
+
+    if moveAllowed:
+        forward(speed, angle)
     # cv2.imshow("result1", cropped_image)
-    key = cv2.waitKey(1)
+    key = cv2.waitKey(1) & 0xFF
     if key == ord('g'):
         while True:
-            c_key = cv2.waitKey(1)
+            c_key = cv2.waitKey(1) & 0xFF
             if c_key == ord('g'):
                 break
             time.sleep(1)
-    if key == ord('q'):
+    if key == ord('z'):
         break
-cap.release()
+    if key == ord("w"):
+        speed +=1
+    if key == ord("s"):
+        speed -=1
+    if key == ord("a"):
+        if angle == 0.0 or angle == -default_large_angle:
+            angle = -default_angle
+        elif angle == default_angle or default_large_angle:
+            angle = 0.0
+    if key == ord("d"):
+        if angle == 0.0 or angle == default_large_angle:
+            angle = default_angle
+        elif angle == -default_angle or angle == -default_large_angle:
+            angle = 0.0
+    if key == ord("q"):
+        if angle == 0.0 or angle == -default_angle:
+            angle = - default_large_angle
+        elif angle == default_angle or angle == default_large_angle:
+            angle = 0.0
+    if key == ord("e"):
+        if angle == 0.0 or angle == default_angle:
+            angle = default_large_angle
+        elif angle == -default_angle or angle == -default_large_angle:
+            angle = 0.0
+    if key == ord("r"):
+        oldSpeed = -speed
+        stop(angle)
+        time.sleep(0.5)
+        forward(oldSpeed, angle)
+        speed = oldSpeed
+    if key == ord(" "):
+        stop(0.0)
+        if moveAllowed ==True:
+            moveAllowed = False
+        else:
+            moveAllowed = True
+            if speed < 0:
+                speed = -default_speed
+            else:
+                speed = default_speed
+ 
 cv2.destroyAllWindows()
+stop(0.0)
+
