@@ -555,7 +555,7 @@ def down_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
     value = coef * angle_coefficient
-    if value > 23:
+    if value > 20:
         value = 23
     return -float(value)
 
@@ -564,7 +564,7 @@ def up_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
     value = coef * angle_coefficient
-    if value > 23:
+    if value > 20:
         value = 23
     return float(value)
 
@@ -574,27 +574,22 @@ def do_nothing():
 
 
 def prepare_speed(c_angle):
-    value = 15.0
-    if c_angle < -20:
-        value = 20.0
-    elif c_angle < -18:
-        value = 19.0
-    elif c_angle < -16:
+    if c_angle < -17:
         value = 18.0
-    elif c_angle < -14:
+    elif c_angle < -13:
         value = 17.0
-    elif c_angle < -12:
+    elif c_angle < -10:
         value = 16.0
-    elif c_angle > 20:
-        value = 19.0
+    elif c_angle < -8:
+        value = 15.0
     elif c_angle > 18:
         value = 18.0
-    elif c_angle > 16:
+    elif c_angle > 15:
         value = 17.0
-    elif c_angle > 14:
-        value = 16.0
     elif c_angle > 12:
         value = 16.0
+    else:
+        value = 15.0
     return value
 
 
@@ -606,7 +601,7 @@ decision = 0.0
 action_index = 0
 max = 0
 min = 100
-angle_coefficient = 11.5
+angle_coefficient = 10.5
 is_brake = False
 try:
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
