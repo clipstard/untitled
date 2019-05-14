@@ -292,21 +292,6 @@ def make_coordinates(image, line_parameters):
     return np.array([x1, y1, x2, y2])
 
 
-def print_lines(lines):
-    count = 0
-    for line in lines:
-        count += 1
-        x1, y1, x2, y2 = line
-        if x2 > x1:
-            print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2, 'x2 > x1')
-        elif x1 > x2:
-            print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2, 'x2 < x1')
-        elif y1 > y2:
-            print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2, 'y2 < y1')
-        else:
-            print ('x1', x1, 'y1', y1, 'x2', x2, 'y2', y2, 'other')
-
-
 def make_average_coordinates(lines):
     if lines is None or not len(lines):
         return None
@@ -532,8 +517,31 @@ def make_average_lines(last_lines, current_lines):
 def down_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
-    value = coef * angle_coefficient
-    if value > 18:
+    if coef < 0.2:
+        value = 1
+    elif coef < 0.3:
+        value = 2.5
+    elif coef < 0.4:
+        value = 3.5
+    elif coef < 0.5:
+        value = 4.75
+    elif 0.6 < coef < 1.0:
+        value = coef * 10
+    elif coef < 1.1:
+        value = 11.25
+    elif coef < 1.2:
+        value = 12.5
+    elif coef < 1.3:
+        value = 14
+    elif coef < 1.4:
+        value = 16
+    elif coef < 1.5:
+        value = 18
+    elif coef < 1.6:
+        value = 20
+    else:
+        value = 23
+    if value > 23:
         value = 23
     return -float(value)
 
@@ -541,8 +549,31 @@ def down_angle(coefficient):
 def up_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
-    value = coef * angle_coefficient
-    if value > 18:
+    if coef < 0.2:
+        value = 1
+    elif coef < 0.3:
+        value = 2.5
+    elif coef < 0.4:
+        value = 3.5
+    elif coef < 0.5:
+        value = 4.75
+    elif 0.6 < coef < 1.0:
+        value = coef * 10
+    elif coef < 1.1:
+        value = 11.25
+    elif coef < 1.2:
+        value = 12.5
+    elif coef < 1.3:
+        value = 14
+    elif coef < 1.4:
+        value = 16
+    elif coef < 1.5:
+        value = 18
+    elif coef < 1.6:
+        value = 20
+    else:
+        value = 23
+    if value > 23:
         value = 23
     return float(value)
 
@@ -566,7 +597,7 @@ def prepare_speed(c_angle):
     elif c_angle > 15:
         value = base_speed + 1.5
     elif c_angle > 12:
-        value = base_speed + 1.25
+        value = base_speed + 1
     else:
         value = base_speed
     return float(value)
