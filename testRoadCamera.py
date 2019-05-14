@@ -50,15 +50,37 @@ def stop(angle=0.0):
     do_nothing()
 
 
+def after_stop_left():
+    global speed
+    forward(speed, -1.0)
+    wait(0.7)
+    forward(19.0, -23.0)
+    wait(3.3)
+    do_nothing()
+
+
+def after_stop_right():
+    global speed
+    forward(speed, -1.0)
+    wait(0.5)
+    forward(18.0, 23.0)
+    wait(2.9)
+    do_nothing()
+
+
+def after_stop_forward():
+    do_nothing()
+
+
 def move_in_intersection(direction):
     global listen_to_lines
     listen_to_lines = False
     print(direction)
     if direction == constant.LEFT:
-        wait(1.0)
+        after_stop_left()
         listen_to_lines = True
     elif direction == constant.RIGHT:
-        wait(1.0)
+        after_stop_right()
         listen_to_lines = True
     elif direction == constant.FORWARD:
         wait(1.0)
@@ -66,7 +88,7 @@ def move_in_intersection(direction):
     elif direction == constant.STOP:
         for i in range(0, 3):
             print("%d," % (i+1))
-            wait(1.0)
+            wait(0.5)
         print('go')
         listen_to_lines = True
     else:
@@ -408,55 +430,6 @@ def canny(image):
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
     canny = cv2.Canny(blur, 0, 255)
     return canny
-
-
-def display_lines(image, lines):
-    line_imagez = np.zeros_like(image)
-    count = 3
-    colors = [
-        (255, 0, 0),
-        (100, 100, 100),
-        (0, 0, 0),
-        (255, 255, 255),
-        (0, 255, 0),
-        (255, 255, 0),
-        (0, 0, 255),
-        (0, 255, 255),
-        (255, 0, 255),
-        (100, 255, 0),
-        (255, 100, 0),
-        (255, 0, 100),
-        (100, 0, 255),
-        (255, 100, 255),
-        (100, 100, 0),
-        (255, 255, 100),
-        (100, 100, 255),
-        (100, 0, 100),
-        (50, 100, 255),
-        (50, 50, 50),
-        (255, 100, 50),
-        (50, 100, 0),
-        (255, 50, 0),
-        (255, 0, 50),
-        (255, 50, 50),
-        (100, 100, 50),
-        (50, 100, 100),
-        (0, 50, 0),
-        (0, 0, 50)
-    ]
-
-    if lines is not None:
-        for line in lines:
-            x1, y1, x2, y2 = line.reshape(4)
-            x1 = int(x1)
-            y1 = int(y1)
-            x2 = int(x2)
-            y2 = int(y2)
-            count += 1
-            if count > len(colors) - 1:
-                count = count - len(colors)
-            cv2.line(line_imagez, (x1, y1), (x2, y2), colors[count], 10)
-    return line_imagez
 
 
 def display_average_lines(image, lines, interrupted):
