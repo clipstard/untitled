@@ -65,7 +65,7 @@ def move_in_intersection(direction):
         listen_to_lines = True
     elif direction == constant.STOP:
         for i in range(0, 3):
-            print("%d," % i+1)
+            print("%d," % (i+1))
             wait(1.0)
         print('go')
         listen_to_lines = True
@@ -641,8 +641,13 @@ try:
                     print(calculated_angle, 'before')
                 if len(to_check_lines) == 3:
                     line = to_check_lines[2]
-                    x1, y1, x2, y2 = line
-                    if y2 >= height * 0.8 or y1 >= height * 0.8:
+                    try:
+                        if len(line) == 1 and isinstance(line[0], list):
+                            line = line[0]
+                        x1, y1, x2, y2 = line
+                    except:
+                        print('here')
+                    if y2 >= height * 0.7 or y1 >= height * 0.7:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
                         x.start()
                         y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
@@ -676,7 +681,8 @@ try:
         rawCapture.truncate(0)
     cv2.destroyAllWindows()
     stop()
-except:
+except Exception as ex:
+    print(ex)
     stop()
     cv2.destroyAllWindows()
 
