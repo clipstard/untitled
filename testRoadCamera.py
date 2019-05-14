@@ -54,7 +54,7 @@ def after_stop_left():
     global speed
     forward(speed, -1.0)
     wait(0.7)
-    forward(19.0, -23.0)
+    forward(21.0, -23.0)
     wait(3.3)
     do_nothing()
 
@@ -62,7 +62,7 @@ def after_stop_left():
 def after_stop_right():
     global speed
     forward(speed, -1.0)
-    wait(0.5)
+    wait(0.2)
     forward(18.0, 23.0)
     wait(3.2)
     do_nothing()
@@ -74,6 +74,8 @@ def after_stop_forward():
 
 def move_in_intersection(direction):
     global listen_to_lines
+    global base_speed
+    global frame_count
     listen_to_lines = False
     print(direction)
     if direction == constant.LEFT:
@@ -95,6 +97,8 @@ def move_in_intersection(direction):
     else:
         wait(4.0)
         listen_to_lines = True
+    base_speed = 17.5
+    frame_count = 0
     return True
 
 
@@ -529,7 +533,7 @@ def down_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
     value = coef * angle_coefficient
-    if value > 20:
+    if value > 18:
         value = 23
     return -float(value)
 
@@ -538,7 +542,7 @@ def up_angle(coefficient):
     global angle_coefficient
     coef = abs(coefficient)
     value = coef * angle_coefficient
-    if value > 20:
+    if value > 18:
         value = 23
     return float(value)
 
@@ -550,19 +554,19 @@ def do_nothing():
 def prepare_speed(c_angle):
     global base_speed
     if c_angle < -17:
-        value = base_speed + 3
+        value = base_speed + 5
     elif c_angle < -13:
-        value = base_speed + 2
+        value = base_speed + 3
     elif c_angle < -10:
-        value = base_speed + 1
+        value = base_speed + 1.75
     elif c_angle < -8:
         value = base_speed
     elif c_angle > 18:
-        value = base_speed + 3
+        value = base_speed + 2.75
     elif c_angle > 15:
-        value = base_speed + 2
+        value = base_speed + 1.5
     elif c_angle > 12:
-        value = base_speed + 1
+        value = base_speed + 1.25
     else:
         value = base_speed
     return float(value)
@@ -570,7 +574,7 @@ def prepare_speed(c_angle):
 
 count = 0
 last_lines = []
-base_speed = 18.0
+base_speed = 17.5
 speed = base_speed
 angle = 0.0
 decision = 0.0
@@ -585,8 +589,8 @@ try:
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         frame = camera_frame.array
         frame_count += 1
-        if 10 < frame_count < 20:
-            base_speed = 16.0
+        if 5 < frame_count < 20:
+            base_speed = 16.5
         if not is_brake:
             forward(speed, angle)
         else:
@@ -630,7 +634,6 @@ try:
                         print('here')
                     if y2 >= height * 0.7 or \
                        y1 >= height * 0.7 :
-                        print(y1, y2)
                         move_in_intersection(constant.STOP)
                         move_in_intersection(const_actions[action_index])
                         action_index += 1
@@ -639,11 +642,13 @@ try:
                 if -0.1 < calculated_angle < 0.1:
                     angle = 0.0
                 else:
-                    if calculated_angle < 0:
-                        angle = down_angle(calculated_angle)
-                    else:
-                        angle = up_angle(calculated_angle)
+                    if -2 < calculated_angle < 2:
+                        if calculated_angle < 0:
+                            angle = down_angle(calculated_angle)
+                        else:
+                            angle = up_angle(calculated_angle)
                 speed = prepare_speed(angle)
+                print(speed, angle, 'sss')
 
             key = cv2.waitKey(1)
             if key == ord('p'):
