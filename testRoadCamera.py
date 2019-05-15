@@ -586,6 +586,81 @@ def do_nothing():
     return None
 
 
+def new_angle(lines):
+    global height
+    global width
+    coefficients = [None, None]
+    if len(lines) == 1:
+        line = lines[0]
+        x1, y1, x2, y2 = line
+        if width - x1 > width / 2:
+            coefficients[0] = x1
+        else:
+            coefficients[1] = (width - x1)
+    if len(lines) == 2:
+        right_line, left_line = lines
+        if left_line is not None and right_line is not None:
+            rx1, ry1, rx2, ry2 = right_line
+            lx1, ly1, lx2, ly2 = left_line
+            if rx1 < width:
+                coefficients[1] = width - rx1
+            if lx1 > 0:
+                coefficients[0] = lx1
+        elif right_line is not None:
+            rx1, ry1, rx2, ry2 = right_line
+            coefficients[1] = (height - rx1)
+        elif left_line is not None:
+            lx1, ly1, lx2, ly2 = left_line
+            coefficients[0] = lx1
+
+    if len(lines) == 3:
+        right_line, left_line, stop_line = lines
+        if right_line is not None:
+            rx1, ry1, rx2, ry2 = right_line
+            if rx1 < width:
+                coefficients[1] = width - rx1
+        if left_line is not None:
+            lx1, ly1, lx2, ly2 = left_line
+            if lx1 > 0:
+                coefficients[0] = lx1
+
+    return coefficients
+
+
+def process_lines_spaces(spaces):
+    left_space, right_space = spaces
+    if left_space is None:
+        return right_space
+    if right_space is None:
+        return left_space
+    if right_space > left_space:
+        return right_space
+    else:
+        return left_space
+
+
+def convert_space_to_angle(space, calculated_coefficient):
+    if space is None:
+        space = 0
+    space = space * 2.5
+    if calculated_coefficient < 0:
+        sign = -1
+    else:
+        sign = 1
+    calculated_coefficient = abs(calculated_coefficient * 11)
+    if calculated_coefficient > 23:
+        calculated_coefficient = 23
+    return (calculated_coefficient * sign) + (space / 100)
+
+
+def validate_angle(c_angle):
+    if c_angle > 23:
+        return 23
+    if c_angle < -23:
+        return - 23
+    return c_angle
+
+
 def prepare_speed(c_angle):
     global base_speed
     if c_angle < -17:
@@ -646,14 +721,16 @@ try:
 #                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
 #                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
 #                cv2.imshow("result", combo_image)
+                count = 0
             else:
                 if count < 2:
                     to_check_lines = last_lines
+                    count += 1
+                else:
+                    to_check_lines = None
 #                    line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
 #                    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
 #                    cv2.imshow("result", combo_image)
-                    count += 1
-#                else:
 #                    cv2.imshow("result", frame)
             if to_check_lines is not None:
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
@@ -661,14 +738,11 @@ try:
                     print(calculated_angle, 'before')
                 if len(to_check_lines) == 3:
                     line = to_check_lines[2]
-                    try:
-                        if len(line) == 1 and isinstance(line[0], list):
-                            line = line[0]
-                        x1, y1, x2, y2 = line
-                    except:
-                        print('here')
-                    if y2 >= height * 0.7 or \
-                       y1 >= height * 0.7 :
+                    if len(line) == 1 and isinstance(line[0], list):
+                        line = line[0]
+                    x1, y1, x2, y2 = line
+                    if y2 >= height * 0.8 and \
+                       y1 >= height * 0.8:
                         move_in_intersection(constant.STOP)
                         move_in_intersection(const_actions[action_index])
                         action_index += 1
@@ -678,12 +752,13 @@ try:
                     angle = 0.0
                 else:
                     if -2.5 < calculated_angle < 2.5:
-                        if calculated_angle < 0:
-                            angle = down_angle(calculated_angle)
-                        else:
-                            angle = up_angle(calculated_angle)
+                        test_var = new_angle(to_check_lines)
+                        space = process_lines_spaces(test_var)
+                        angle = validate_angle(convert_space_to_angle(space, calculated_angle))
+                        print(space, calculated_angle, 'space')
+
                 speed = prepare_speed(angle)
-                print(speed, angle, 'sss')
+                print(speed, angle, 'yo')
 
             key = cv2.waitKey(1)
             if key == ord('p'):
