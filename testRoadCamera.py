@@ -213,13 +213,19 @@ def reduce_horizontals(array):
 
 
 def reduce_horizontals2(array):
+    global height
+    global horizontal_zone_from
+    global horizontal_zone_to
     if array is None:
         return None
     aux = []
     for line in array:
         for item in line:
             x1, y1, x2, y2 = item
-            if abs(x1 - x2) > 20 and abs(y1 - y2) < 30 and y1 != y2:
+            abs_y = abs(y2 - y1)
+            if abs_y == 0:
+                continue
+            if abs(x1 - x2) / abs_y < 5 and x1 < height * horizontal_zone_from > x2:
                 continue
             else:
                 aux.append([[x1, y1, x2, y2]])
@@ -288,11 +294,7 @@ def lines_are_equal(line1, line2):
 
 
 def find_nearest_point(line, lines):
-    global height
-    global horizontal_zone_from
     ax1, ay1, ax2, ay2 = line
-    if ax1 >= height * horizontal_zone and ax2 >= height * horizontal_zone:
-        return None
     for l in lines:
         x1, y1, x2, y2 = l
         if abs(x1 - ax2) < 10 and abs(y1 - ay2) < 10:
@@ -313,8 +315,6 @@ def make_coordinates(image, line_parameters):
 
 
 def make_average_coordinates(lines):
-    global height
-    global horizontal_zone_from
     if lines is None or not len(lines):
         return None
     x1 = 0
@@ -336,8 +336,6 @@ def make_average_coordinates(lines):
             ax1, ay1, ax2, ay2 = x
         else:
             ax1, ay1, ax2, ay2 = line
-        if ax1 >= height * horizontal_zone and ax2 >= height * horizontal_zone:
-            continue
         x1 += ax1
         x2 += ax2
         y1 += ay1
@@ -401,10 +399,13 @@ def average_slope_intercept(image, lines):
         x1, y1, x2, y2 = line.reshape(4)
         parameters = np.polyfit((x1, x2), (y1, y2), 1)
         slope, intercept = parameters[0:2]
-        if y1 < y2 and (x2 <= height * horizontal_zone or x1 <= height * horizontal_zone):
+        abs_y = abs(y2 - y1)
+        if abs_y == 0:
+            stop_fit.append([x1, y1, x2, y2])
+        elif y1 < y2 and (abs(x2 - x1) / abs_y) < 5:
             left_fit.append((slope, intercept))
             left_lines.append([x1, y1, x2, y2])
-        elif y2 < y1 and (x2 <= height * horizontal_zone or x1 <= height * horizontal_zone):
+        elif y2 < y1 and (abs(x2 - x1) / abs_y) < 5:
             right_fit.append((slope, intercept))
             right_lines.append([x1, y1, x2, y2])
         else:
@@ -612,6 +613,7 @@ def new_angle(lines):
         if left_line is not None and right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             lx1, ly1, lx2, ly2 = left_line
+            print(right_line, left_line)
             if rx1 < width:
                 coefficients[1] = width - rx1
             if lx1 > 0:
@@ -639,6 +641,8 @@ def new_angle(lines):
 
 def process_lines_spaces(spaces):
     left_space, right_space = spaces
+    if left_space is None and right_space is None:
+        return None
     if left_space is None:
         return right_space
     if right_space is None:
@@ -652,43 +656,49 @@ def process_lines_spaces(spaces):
 def convert_space_to_angle(space, calculated_coefficient):
     if space is None:
         space = 0
-    space = space * 2.5
+    space = space * 2.75
     if calculated_coefficient < 0:
         sign = -1
     else:
         sign = 1
-    calculated_coefficient = abs(calculated_coefficient * 11)
+    calculated_coefficient = abs(calculated_coefficient * 11.5)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    return (calculated_coefficient * sign) + (space / 100)
+    aux = (calculated_coefficient * sign) + (space / 100)
+    if aux > 23:
+        return 23
+    if aux < -23:
+        return -23
+    return aux
 
 
 def validate_angle(c_angle):
-    if c_angle > 23:
+    if c_angle >= 22:
         return 23
-    if c_angle < -23:
+    if c_angle <= -22:
         return - 23
     return c_angle
 
 
 def prepare_speed(c_angle):
     global base_speed
+    global increase_speed
     if c_angle < -17:
-        value = base_speed + 5
+        value = base_speed * 0.2 + base_speed + increase_speed
     elif c_angle < -13:
-        value = base_speed + 3
+        value = base_speed * 0.175 + base_speed + increase_speed
     elif c_angle < -10:
-        value = base_speed + 1.75
+        value = base_speed * 0.125 + base_speed + increase_speed
     elif c_angle < -8:
         value = base_speed
     elif c_angle > 18:
-        value = base_speed + 2.75
+        value = base_speed * 0.175 + base_speed + increase_speed
     elif c_angle > 15:
-        value = base_speed + 1.5
+        value = base_speed * 0.155 + base_speed + increase_speed
     elif c_angle > 12:
-        value = base_speed + 1
+        value = base_speed * 0.12 + base_speed + increase_speed
     else:
-        value = base_speed
+        value = base_speed + increase_speed
     return float(value)
 
 
@@ -721,12 +731,20 @@ def pop_first(items):
     return aux
 
 
+def downgrade_speed():
+    global base_speed
+    base_speed -=0.5
+
+
+speed_const = 17.0
 horizontal_zone_from = 0.75
 horizontal_zone_to = 0.95
 count = 0
 last_lines = []
-base_speed = 17.5
-backup_base_speed = 17.5
+increase_speed = 0
+base_speed = speed_const
+backup_base_speed = speed_const
+restore_speed = speed_const
 speed = base_speed
 angle = 0.0
 decision = 0.0
@@ -739,10 +757,11 @@ frame_count = 0
 speed_accuracy_stack = []
 try:
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        base_speed = backup_base_speed
         frame = camera_frame.array
         frame_count += 1
         if 5 < frame_count < 20:
-            base_speed = 16.5
+            base_speed = speed_const
         if not is_brake:
             forward(speed, angle)
         else:
@@ -750,13 +769,15 @@ try:
         if listen_to_lines:
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
+            downgrade_speed()
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
-            height = frame.shape[0]
-            width = frame.shape[1]
+            height = frame.shape[1]
+            width = frame.shape[0]
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
             averaged_lines, lines_interrupted = average_slope_intercept(cropped_image, lines)
+            downgrade_speed()
             if averaged_lines is not None:
                 to_check_lines = make_average_lines(last_lines, averaged_lines)
                 last_lines = averaged_lines
@@ -764,6 +785,7 @@ try:
                 combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                 cv2.imshow("result", combo_image)
                 count = 0
+                downgrade_speed()
             else:
                 if count < 2:
                     to_check_lines = last_lines
@@ -775,6 +797,7 @@ try:
                     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
+                downgrade_speed()
                 if len(speed_accuracy_stack) < 5:
                     speed_accuracy_stack.append(to_check_lines)
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
@@ -782,8 +805,8 @@ try:
                     speed_accuracy_stack = []
                 elif len(speed_accuracy_stack) >= 5:
 
-                    if base_speed < 20:
-                        base_speed += 0.5
+                    if increase_speed < 2.5:
+                        increase_speed += 0.5
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 all_are_the_same_or_near(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
@@ -792,8 +815,10 @@ try:
                     if len(line) == 1 and isinstance(line[0], list):
                         line = line[0]
                     x1, y1, x2, y2 = line
-                    if height * horizontal_zone_to <= y2 >= height * horizontal_zone_from and \
-                            height * horizontal_zone_to <= y1 >= height * horizontal_zone_from:
+                    if height * horizontal_zone_to < y2 >= height * horizontal_zone_from and \
+                            height * horizontal_zone_to < y1 >= height * horizontal_zone_from:
+                        print(width, height)
+                        print(line)
                         move_in_intersection(constant.STOP)
                         move_in_intersection(const_actions[action_index])
                         action_index += 1
@@ -806,7 +831,7 @@ try:
                         test_var = new_angle(to_check_lines)
                         space = process_lines_spaces(test_var)
                         angle = validate_angle(convert_space_to_angle(space, calculated_angle))
-
+                        print(speed, angle, space, calculated_angle)
                 speed = prepare_speed(angle)
 
             key = cv2.waitKey(1)
