@@ -481,8 +481,8 @@ def region_of_interest(image):
     width = image.shape[1]
     polygons = np.array([
         [(-155, height),
-         (0 + int(width / 4), height - int(height / 3)),
-         (width - int(width / 4), height - int(height / 3)),
+         (0 + int(width / 4), height - int(height / 2)),
+         (width - int(width / 4), height - int(height / 2)),
          (width + 155, height)]
     ])
     vid = np.array([
@@ -692,11 +692,11 @@ def prepare_speed(c_angle):
     elif c_angle < -8:
         value = base_speed
     elif c_angle > 18:
-        value = base_speed * 0.165 + base_speed + increase_speed
-    elif c_angle > 15:
         value = base_speed * 0.145 + base_speed + increase_speed
+    elif c_angle > 15:
+        value = base_speed * 0.125 + base_speed + increase_speed
     elif c_angle > 12:
-        value = base_speed * 0.12 + base_speed + increase_speed
+        value = base_speed * 0.1 + base_speed + increase_speed
     else:
         value = base_speed + increase_speed
     return float(value)
@@ -743,7 +743,7 @@ def car_started():
 
 
 speed_const = 17.5
-horizontal_zone_from = 0.75
+horizontal_zone_from = 0.70
 horizontal_zone_to = 0.95
 count = 0
 last_lines = []
@@ -758,7 +758,7 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
-is_brake = False
+is_brake = True
 frame_count = 0
 speed_accuracy_stack = []
 try:
@@ -810,23 +810,34 @@ try:
             if to_check_lines is not None:
                 downgrade_speed()
                 if len(speed_accuracy_stack) < 5:
-                    increase_speed = 0
+                    if angle <= float(18) and angle >=float(-18):
+                        increase_speed = 0
                     speed_accuracy_stack.append(to_check_lines)
+                    
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
+                    if angle >= float(18) or angle <= float(-18):
+                        if increase_speed > -3:
+                            increase_speed -= 0.5
                 elif len(speed_accuracy_stack) >= 5:
-
                     if increase_speed < 3:
-                        increase_speed += 0.5
+                        increase_speed += 0.25
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 all_are_the_same_or_near(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if len(to_check_lines) == 3:
-                    line = to_check_lines[2]
-                    if len(line) == 1 and isinstance(line[0], list):
-                        line = line[0]
-                    x1, y1, x2, y2 = line
+                    x1 = 0
+                    x2 = 0
+                    y1 = 0
+                    y2 = 0
+                    try:
+                        line = to_check_lines[2]
+                        if len(line) == 1 and isinstance(line[0], list):
+                            line = line[0]
+                        x1, y1, x2, y2 = line
+                    except:
+                        print('here')
                     if height * horizontal_zone_to < y2 >= height * horizontal_zone_from and \
                             height * horizontal_zone_to < y1 >= height * horizontal_zone_from:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
