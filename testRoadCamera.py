@@ -9,12 +9,12 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-    constant.PARKING,
-    constant.RIGHT,
-    constant.LEFT,
-    constant.RIGHT,
-    constant.LEFT,
-    constant.FINISH
+#    constant.PARKING,
+#    constant.RIGHT,
+#    constant.LEFT,
+#    constant.RIGHT,
+#    constant.LEFT,
+#    constant.FINISH
 ]
 
 
@@ -30,21 +30,23 @@ def custom_wait(seconds):
 
 
 def after_stop_left():
-    global speed
-    forward(speed, -1.0)
-    wait(0.7)
-    forward(21.0, -23.0)
-    wait(3.3)
+    print('i try')
+    forward(17.5)
+    wait(0.9)
+    forward(21.0, -22.0)
+    wait(3)
+    forward(0.0)
     do_nothing()
 
 
 def after_stop_right():
     global speed
-    forward(speed, -1.0)
-    wait(0.2)
-    forward(18.0, 23.0)
-    wait(3.0)
+    forward(17.5)
+    wait(0.6)
+    forward(17.5, 23.0)
+    wait(2.7)
     do_nothing()
+    forward(0.0)
 
 
 def parking_action():
@@ -64,6 +66,8 @@ def parking_action():
 
 
 def after_stop_forward():
+    forward(17.5)
+    wait(2)
     do_nothing()
 
 
@@ -75,20 +79,20 @@ def move_in_intersection(direction):
     listen_to_lines = False
     print(direction)
     if direction == constant.LEFT and not threads_off:
-        x_thread = threading.Thread(target=signaling_left, args=())
-        x_thread.start()
+#        x_thread = threading.Thread(target=signaling_left, args=())
+#        x_thread.start()
         after_stop_left()
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
-        x_thread = threading.Thread(target=signaling_right, args=())
-        x_thread.start()
+#        x_thread = threading.Thread(target=signaling_right, args=())
+#        x_thread.start()
         after_stop_right()
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
         wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
-        stop()
+        forward(0.0)
         for i in range(0, 3):
             print("%d," % (i + 1))
             wait(0.5)
@@ -670,6 +674,7 @@ def validate_increase(i_speed):
         return i_speed - 2
     if i_speed <= -max_increase_speed + 1:
         return i_speed + 1
+    return i_speed
 
 
 def prepare_speed(c_angle):
@@ -697,9 +702,9 @@ def all_are_the_same_or_near(lines):
         if (l_ref is None and l_line is not None) or (r_ref is None and r_line is not None) or \
                 (l_ref is not None and l_line is None) or (r_ref is not None and r_line is None):
             return False
-        if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 20:
+        if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 40:
             l_flag = True
-        if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 20:
+        if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 40:
             r_flag = True
 
     return l_flag and r_flag
@@ -731,7 +736,7 @@ close_thread = False
 threads_off = False
 max_increase_speed = 4
 speed_const = 17.5
-horizontal_zone_from = 0.70
+horizontal_zone_from = 0.8
 horizontal_zone_to = 0.95
 count = 0
 last_lines = []
@@ -800,6 +805,7 @@ def event_listener():
         if message == constant.OBJECT_IN_FRONT:
             # object detected function
             do_nothing()
+    print('thread closed')
 
 
 def signaling_left():
@@ -869,17 +875,34 @@ def init_gpi():
     GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
 
 
+def test_program():
+    signaling_left()
+    forward(19.0, 0.0)
+    wait(0.5)
+    forward(19.0, 22)
+    wait(2)
+    forward(20)
+    wait(1)
+    forward(21.0, -22)
+    wait(2)
+    forward(20.0)
+    wait(1)
+    stop()
+
 serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
 serialHandler.startReadThread()
 camera = PiCamera()
 camera.resolution = (640, 480)
-camera.framerate = 20
+camera.framerate = 32
 rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 init_gpi()
 try:
-    listener_thread = threading.Thread(target=event_listener, args=())
-    listener_thread.start()
+    blue_light_on()
+    event_listener()
+#    test_program()
+#    listener_thread = threading.Thread(target=event_listener, args=())
+#    listener_thread.start()
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         frame = camera_frame.array
 
@@ -889,14 +912,15 @@ try:
         if frame_count < 2:
             x = threading.Thread(target=car_started, args=())
             x.start()
-        if not is_brake:
-            forward(speed, angle)
-        else:
-            forward(0.0, angle)
         #            stop(angle)
         if listen_to_lines:
+            if not is_brake:
+                forward(speed, angle)
+            else:
+                forward(0.0, angle)
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
+            cv2.imshow("test", cropped_image)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
@@ -924,22 +948,24 @@ try:
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
                 if len(speed_accuracy_stack) < 6:
-                    speed_accuracy_stack.append(to_check_lines)
+                    speed_accuracy_stack.append(to_check_lines[0:2])
 
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
-                    if increase_speed > -max_increase_speed:
+                    print('problem')
+                    if 0 <= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
+                    elif increase_speed > 0:
+                        increase_speed = 0
                     if increase_speed < -max_increase_speed/2:
                         stop_lights_on()
                     else:
                         stop_lights_off()
-                elif len(speed_accuracy_stack) >= 5:
+                elif len(speed_accuracy_stack) >= 6:
                     if increase_speed < max_increase_speed:
                         increase_speed += 0.5
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
-                all_are_the_same_or_near(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if len(to_check_lines) == 3:
                     x1 = 0
@@ -955,12 +981,16 @@ try:
                         print('here')
                     if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
-                        x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
-                        x.start()
+                        move_in_intersection(constant.STOP)
+
                         y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
                         y.start()
+                
                         action_index += 1
-                        if action_index == len(const_actions):
+                        print(action_index, len(const_actions))
+                        if action_index >= len(const_actions):
+                            while y.isAlive():
+                                do_nothing()
                             break
                 if -0.1 < calculated_angle < 0.1:
                     angle = 0.0
@@ -1006,4 +1036,6 @@ except Exception as ex:
     print(ex)
     stop()
     cv2.destroyAllWindows()
-
+blue_light_off()
+stop()
+threads_off = True
