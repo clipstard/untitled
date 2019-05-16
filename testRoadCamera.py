@@ -98,6 +98,7 @@ def move_in_intersection(direction):
         after_stop_left()
         listen_to_lines = True
     elif direction == constant.RIGHT:
+        print('lololololololololo')
         after_stop_right()
         listen_to_lines = True
     elif direction == constant.FORWARD:
@@ -224,7 +225,7 @@ def reduce_horizontals2(array):
             x1, y1, x2, y2 = item
             abs_y = abs(y2 - y1)
             if abs_y == 0:
-                continue
+                abs_y = 1
             if abs(x1 - x2) / abs_y > 5 and x1 < height * horizontal_zone_from > x2:
                 continue
             else:
@@ -781,8 +782,8 @@ try:
             downgrade_speed()
             cv2.imshow("test", cropped_image)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
-            height = frame.shape[1]
-            width = frame.shape[0]
+            height = frame.shape[0]
+            width = frame.shape[1]
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
@@ -833,11 +834,14 @@ try:
                     y2 = 0
                     try:
                         line = to_check_lines[2]
+                        print(line)
                         if len(line) == 1 and isinstance(line[0], list):
                             line = line[0]
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
+                    print(width, height)
+                    print(y1 ,y2)
                     if height * horizontal_zone_to < y2 >= height * horizontal_zone_from and \
                             height * horizontal_zone_to < y1 >= height * horizontal_zone_from:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
