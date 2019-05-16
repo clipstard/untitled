@@ -727,6 +727,7 @@ def car_started():
     base_speed = speed_const - 1
 
 
+close_thread = False
 threads_off = False
 max_increase_speed = 4
 speed_const = 17.5
@@ -770,10 +771,22 @@ def stop(angle=0.0):
     do_nothing()
 
 
+def count2():
+    global close_thread
+    wait(2)
+    close_thread = True
+    return True
+
 def event_listener():
+    global threads_off
+    global close_thread
     import serial
     usb_com = serial.Serial('/dev/ttyUSB0', 9600)
+    aux_thread = threading.Thread(target=count2, args=())
+    aux_thread.start()
     while True:
+        if threads_off or close_thread:
+            break
         message = usb_com.readline()
         if message == constant.IS_DAY:
             night_light_off()
