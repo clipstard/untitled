@@ -804,7 +804,7 @@ def event_listener():
 
 def signaling_left():
     for i in range(0, 2):
-        GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
+        GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
         wait(0.5)
         GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
         wait(0.5)
@@ -813,7 +813,7 @@ def signaling_left():
 
 def signaling_right():
     for i in range(0, 2):
-        GPIO.setup(constant.signals[constant.RIGHT_YELLOW], GPIO.OUT)
+        GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
         wait(0.5)
         GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
         wait(0.5)
@@ -821,7 +821,7 @@ def signaling_right():
 
 
 def stop_lights_on():
-    GPIO.setup(constant.signals[constant.STOP_LIGHT], GPIO.OUT)
+    GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
@@ -831,7 +831,7 @@ def stop_lights_off():
 
 
 def blue_light_on():
-    GPIO.setup(constant.signals[constant.BLUE_LIGHT], GPIO.OUT)
+    GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
@@ -841,7 +841,7 @@ def blue_light_off():
 
 
 def night_light_on():
-    GPIO.setup(constant.signals[constant.NIGHT_LIGHT], GPIO.OUT)
+    GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
@@ -851,13 +851,22 @@ def night_light_off():
 
 
 def back_mode_on():
-    GPIO.setup(constant.signals[constant.BACK_LIGHT], GPIO.OUT)
+    GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
 def back_mode_off():
     GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.LOW)
     do_nothing()
+
+
+def init_gpi():
+    GPIO.setup(constant.signals[constant.BACK_LIGHT], GPIO.OUT)
+    GPIO.setup(constant.signals[constant.NIGHT_LIGHT], GPIO.OUT)
+    GPIO.setup(constant.signals[constant.BLUE_LIGHT], GPIO.OUT)
+    GPIO.setup(constant.signals[constant.STOP_LIGHT], GPIO.OUT)
+    GPIO.setup(constant.signals[constant.RIGHT_YELLOW], GPIO.OUT)
+    GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
 
 
 serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
@@ -867,6 +876,7 @@ camera.resolution = (640, 480)
 camera.framerate = 20
 rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
+init_gpi()
 try:
     listener_thread = threading.Thread(target=event_listener, args=())
     listener_thread.start()
