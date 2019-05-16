@@ -635,36 +635,32 @@ def process_lines_spaces(spaces):
         return right_space
     if right_space is None:
         return left_space
-    if right_space > left_space:
-        return right_space
-    else:
-        return left_space
+    return abs(abs(left_space) - abs(right_space))
 
 
 def convert_space_to_angle(space, calculated_coefficient):
     if space is None:
         space = 0
-    space = space * 2.75
     if calculated_coefficient < 0:
         sign = -1
     else:
         sign = 1
-    calculated_coefficient = abs(calculated_coefficient * 10)
+    if -1 < calculated_coefficient < 1:
+        space = space * 2.5
+        calculated_coefficient = abs(calculated_coefficient * 10)
+    else:
+        calculated_coefficient = abs(calculated_coefficient * 11)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient * sign) + float(space / 50)
-    if aux > 23:
-        return 23
-    if aux < -23:
-        return -23
-    return aux
+    aux = (calculated_coefficient + float(space / 50)) * sign
+    return validate_angle(aux)
 
 
 def validate_angle(c_angle):
     if c_angle >= 22:
         return 23
-    if c_angle <= -22:
-        return - 23
+    if c_angle <= -22.5:
+        return -22
     return c_angle
 
 
@@ -714,7 +710,6 @@ def pop_first(items):
 
     if len(items) < 2:
         return []
-    print('popped')
     aux = []
     for i in range(1, len(items)):
         aux.append(items[i])

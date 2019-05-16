@@ -9,12 +9,12 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-    constant.PARKING,
-    constant.RIGHT,
-    constant.LEFT,
-    constant.RIGHT,
-    constant.LEFT,
-    constant.FINISH
+#    constant.PARKING,
+#    constant.RIGHT,
+#    constant.LEFT,
+#    constant.RIGHT,
+#    constant.LEFT,
+#    constant.FINISH
 ]
 
 
@@ -30,21 +30,23 @@ def custom_wait(seconds):
 
 
 def after_stop_left():
-    global speed
-    forward(speed, -1.0)
-    wait(0.7)
-    forward(21.0, -23.0)
-    wait(3.3)
+    print('i try')
+    forward(17.5)
+    wait(0.9)
+    forward(21.0, -22.0)
+    wait(3)
+    forward(0.0)
     do_nothing()
 
 
 def after_stop_right():
     global speed
-    forward(speed, -1.0)
-    wait(0.2)
-    forward(18.0, 23.0)
-    wait(3.0)
+    forward(17.5)
+    wait(0.6)
+    forward(17.5, 23.0)
+    wait(2.7)
     do_nothing()
+    forward(0.0)
 
 
 def parking_action():
@@ -64,6 +66,8 @@ def parking_action():
 
 
 def after_stop_forward():
+    forward(17.5)
+    wait(2)
     do_nothing()
 
 
@@ -75,20 +79,20 @@ def move_in_intersection(direction):
     listen_to_lines = False
     print(direction)
     if direction == constant.LEFT and not threads_off:
-        x_thread = threading.Thread(target=signaling_left, args=())
-        x_thread.start()
+#        x_thread = threading.Thread(target=signaling_left, args=())
+#        x_thread.start()
         after_stop_left()
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
-        x_thread = threading.Thread(target=signaling_right, args=())
-        x_thread.start()
+#        x_thread = threading.Thread(target=signaling_right, args=())
+#        x_thread.start()
         after_stop_right()
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
         wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
-        stop()
+        forward(0.0)
         for i in range(0, 3):
             print("%d," % (i + 1))
             wait(0.5)
@@ -596,7 +600,6 @@ def new_angle(lines):
             coefficients[1] = (width - x1)
     if len(lines) == 2:
         left_line, right_line = lines
-        print(lines, 'lines')
         if left_line is not None and right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             lx1, ly1, lx2, ly2 = left_line
@@ -631,36 +634,32 @@ def process_lines_spaces(spaces):
         return right_space
     if right_space is None:
         return left_space
-    if right_space > left_space:
-        return right_space
-    else:
-        return left_space
+    return abs(abs(left_space) - abs(right_space))
 
 
 def convert_space_to_angle(space, calculated_coefficient):
     if space is None:
         space = 0
-    space = space * 2.75
     if calculated_coefficient < 0:
         sign = -1
     else:
         sign = 1
-    calculated_coefficient = abs(calculated_coefficient * 10)
+    if -1 < calculated_coefficient < 1:
+        space = space * 2.5
+        calculated_coefficient = abs(calculated_coefficient * 10)
+    else:
+        calculated_coefficient = abs(calculated_coefficient * 11)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient * sign) + float(space / 50)
-    if aux > 23:
-        return 23
-    if aux < -23:
-        return -23
-    return aux
+    aux = (calculated_coefficient + float(space / 50)) * sign
+    return validate_angle(aux)
 
 
 def validate_angle(c_angle):
-    if c_angle >= 22:
+    if c_angle >= 22.5:
         return 23
-    if c_angle <= -22:
-        return - 23
+    if c_angle <= -22.5:
+        return -22
     return c_angle
 
 
@@ -670,6 +669,7 @@ def validate_increase(i_speed):
         return i_speed - 2
     if i_speed <= -max_increase_speed + 1:
         return i_speed + 1
+    return i_speed
 
 
 def prepare_speed(c_angle):
@@ -697,9 +697,9 @@ def all_are_the_same_or_near(lines):
         if (l_ref is None and l_line is not None) or (r_ref is None and r_line is not None) or \
                 (l_ref is not None and l_line is None) or (r_ref is not None and r_line is None):
             return False
-        if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 20:
+        if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 40:
             l_flag = True
-        if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 20:
+        if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 40:
             r_flag = True
 
     return l_flag and r_flag
@@ -727,10 +727,11 @@ def car_started():
     base_speed = speed_const - 1
 
 
+close_thread = False
 threads_off = False
 max_increase_speed = 4
 speed_const = 17.5
-horizontal_zone_from = 0.70
+horizontal_zone_from = 0.8
 horizontal_zone_to = 0.95
 count = 0
 last_lines = []
@@ -767,71 +768,47 @@ def event_listener():
 
 def signaling_left():
     for i in range(0, 2):
-        print('left on')
-        print("activating pin %d" % constant.signals[constant.LEFT_YELLOW])
-        wait(0.5)
-        print('left off')
-        print("de-activating pin %d" % constant.signals[constant.LEFT_YELLOW])
         wait(0.5)
     do_nothing()
 
 
 def signaling_right():
     for i in range(0, 2):
-        print('right on')
-        print("activating pin %d" % constant.signals[constant.RIGHT_YELLOW])
         wait(0.5)
-        print('right off')
-        print("de-activating pin %d" % constant.signals[constant.RIGHT_YELLOW])
         wait(0.5)
     do_nothing()
 
 
 def stop_lights_on():
-    print('signaling stop on')
-    print("activating pin %d" % constant.signals[constant.STOP_LIGHT])
     do_nothing()
 
 
 def stop_lights_off():
-    print('stop off')
-    print("de-activating pin %d" % constant.signals[constant.STOP_LIGHT])
     do_nothing()
 
 
 def blue_light_on():
-    print('blue light on')
-    print("activating pin %d" % constant.signals[constant.BLUE_LIGHT])
     do_nothing()
 
 
 def blue_light_off():
-    print('blue light off')
-    print("de-activating pin %d" % constant.signals[constant.BLUE_LIGHT])
     do_nothing()
 
 
 def night_light_on():
-    print('night light on')
-    print("activating pin %d" % constant.signals[constant.NIGHT_LIGHT])
     do_nothing()
 
 
 def night_light_off():
-    print('night light off')
-    print("de-activating pin %d" % constant.signals[constant.NIGHT_LIGHT])
     do_nothing()
 
 
 def back_mode_on():
-    print('moving back light')
-    print("activating pin %d" % constant.signals[constant.BACK_LIGHT])
     do_nothing()
 
 
 def back_mode_off():
-    print('moving back none')
-    print("de-activating pin %d" % constant.signals[constant.BACK_LIGHT])
+
     do_nothing()
 
 
@@ -860,14 +837,15 @@ try:
         if frame_count < 2:
             x = threading.Thread(target=car_started, args=())
             x.start()
-        if not is_brake:
-            forward(speed, angle)
-        else:
-            forward(0.0, angle)
         #            stop(angle)
         if listen_to_lines:
+            if not is_brake:
+                forward(speed, angle)
+            else:
+                forward(0.0, angle)
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
+            cv2.imshow("test", cropped_image)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
@@ -895,22 +873,24 @@ try:
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
                 if len(speed_accuracy_stack) < 6:
-                    speed_accuracy_stack.append(to_check_lines)
+                    speed_accuracy_stack.append(to_check_lines[0:2])
 
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
-                    if increase_speed > -max_increase_speed:
+                    print('problem')
+                    if 0 <= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
-                    if increase_speed < -max_increase_speed/2:
+                    elif increase_speed > 0:
+                        increase_speed = 0
+                    if increase_speed < -max_increase_speed / 2:
                         stop_lights_on()
                     else:
                         stop_lights_off()
-                elif len(speed_accuracy_stack) >= 5:
+                elif len(speed_accuracy_stack) >= 6:
                     if increase_speed < max_increase_speed:
                         increase_speed += 0.5
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
-                all_are_the_same_or_near(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if len(to_check_lines) == 3:
                     x1 = 0
@@ -926,13 +906,16 @@ try:
                         print('here')
                     if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
-                        x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
-                        x.start()
-                        y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
-                        y.start()
+                        # move_in_intersection(constant.STOP)
+
+                        # y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
+                        # y.start()
+
                         action_index += 1
-                        if action_index == len(const_actions):
-                            break
+                        # if action_index >= len(const_actions):
+                        #     # while y.isAlive():
+                        #     #     do_nothing()
+                        #     break
                 if -0.1 < calculated_angle < 0.1:
                     angle = 0.0
                 else:
@@ -946,6 +929,7 @@ try:
                     back_mode_on()
                 else:
                     back_mode_off()
+
 
             else:
                 cv2.imshow("result", frame)
