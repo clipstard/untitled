@@ -4,19 +4,7 @@ import numpy as np
 import time
 import constant
 import threading
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import SerialHandler
 
-
-serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
-serialHandler.startReadThread()
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 20
-rawCapture = PiRGBArray(camera, size=(640, 480))
-time.sleep(0.1)
-listen_to_lines = True
 const_actions = [
     constant.RIGHT,
     constant.LEFT,
@@ -41,15 +29,6 @@ def custom_wait(seconds):
         pass
 
 
-def forward(speed, angle=0.0):
-    serialHandler.sendMove(speed, angle)
-
-
-def stop(angle=0.0):
-    serialHandler.sendBrake(angle)
-    do_nothing()
-
-
 def after_stop_left():
     global speed
     forward(speed, -1.0)
@@ -66,8 +45,8 @@ def after_stop_right():
     forward(18.0, 23.0)
     wait(3.0)
     do_nothing()
-    
-    
+
+
 def parking_action():
     forward(-19, 22)
     wait(1.5)
@@ -89,31 +68,36 @@ def after_stop_forward():
 
 
 def move_in_intersection(direction):
+    global threads_off
     global listen_to_lines
     global base_speed
     global frame_count
     listen_to_lines = False
     print(direction)
-    if direction == constant.LEFT:
+    if direction == constant.LEFT and not threads_off:
+        x_thread = threading.Thread(target=signaling_left, args=())
+        x_thread.start()
         after_stop_left()
         listen_to_lines = True
-    elif direction == constant.RIGHT:
+    elif direction == constant.RIGHT and not threads_off:
+        x_thread = threading.Thread(target=signaling_right, args=())
+        x_thread.start()
         after_stop_right()
         listen_to_lines = True
-    elif direction == constant.FORWARD:
+    elif direction == constant.FORWARD and not threads_off:
         wait(1.0)
         listen_to_lines = True
-    elif direction == constant.STOP:
+    elif direction == constant.STOP and not threads_off:
         stop()
         for i in range(0, 3):
-            print("%d," % (i+1))
+            print("%d," % (i + 1))
             wait(0.5)
         print('go')
         listen_to_lines = True
-    else:
+        stop_lights_off()
+    elif not threads_off:
         wait(4.0)
-        listen_to_lines = True
-    base_speed = 17.5
+    listen_to_lines = True
     frame_count = 0
     return True
 
@@ -224,7 +208,7 @@ def reduce_horizontals2(array):
             x1, y1, x2, y2 = item
             abs_y = abs(y2 - y1)
             if abs_y == 0:
-                continue
+                abs_y = 1
             if abs(x1 - x2) / abs_y > 5 and x1 < height * horizontal_zone_from > x2:
                 continue
             else:
@@ -403,10 +387,10 @@ def average_slope_intercept(image, lines):
 
         if abs_y == 0:
             stop_fit.append([x1, y1, x2, y2])
-        elif y1 > y2 and (abs(x2-x1)/abs_y) < 5:
+        elif y1 > y2 and (abs(x2 - x1) / abs_y) < 5:
             left_fit.append((slope, intercept))
             left_lines.append([x1, y1, x2, y2])
-        elif y1 < y2 and (abs(x2-x1)/abs_y) < 5:
+        elif y1 < y2 and (abs(x2 - x1) / abs_y) < 5:
             right_fit.append((slope, intercept))
             right_lines.append([x1, y1, x2, y2])
         else:
@@ -416,7 +400,7 @@ def average_slope_intercept(image, lines):
         left_fit_avg = np.average(left_fit, axis=0)
         left_total = make_coordinates(image, left_fit_avg)
         left_is_interrupted = line_is_interrupted(left_lines)
-        
+
     if len(right_fit):
         right_fit_avg = np.average(right_fit, axis=0)
         right_total = make_coordinates(image, right_fit_avg)
@@ -492,7 +476,7 @@ def region_of_interest(image):
     ])
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
-#    cv2.fillPoly(mask, vid, 0)
+    #    cv2.fillPoly(mask, vid, 0)
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
@@ -538,7 +522,8 @@ def make_average_lines(last_lines, current_lines):
         elif current_lines[i] is not None and last_lines[i] is None:
             aux.append(normalize_line(convert_numpy_to_array(current_lines[i])))
         else:
-            aux.append(normalize_line(convert_numpy_to_array(make_average_coordinates([last_lines[i], current_lines[i]]))))
+            aux.append(
+                normalize_line(convert_numpy_to_array(make_average_coordinates([last_lines[i], current_lines[i]]))))
     return np.array(de_array(aux))
 
 
@@ -611,16 +596,15 @@ def new_angle(lines):
             coefficients[1] = (width - x1)
     if len(lines) == 2:
         left_line, right_line = lines
+        print(lines, 'lines')
         if left_line is not None and right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             lx1, ly1, lx2, ly2 = left_line
-            if rx1 < width:
-                coefficients[1] = width - rx1
-            if lx1 > 0:
-                coefficients[0] = lx1
+            coefficients[0] = lx1
+            coefficients[1] = width - rx1
         elif right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
-            coefficients[1] = (height - rx1)
+            coefficients[1] = (width - rx1)
         elif left_line is not None:
             lx1, ly1, lx2, ly2 = left_line
             coefficients[0] = lx1
@@ -661,10 +645,10 @@ def convert_space_to_angle(space, calculated_coefficient):
         sign = -1
     else:
         sign = 1
-    calculated_coefficient = abs(calculated_coefficient * 11)
+    calculated_coefficient = abs(calculated_coefficient * 10)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient * sign) + float(space / 100)
+    aux = (calculated_coefficient * sign) + float(space / 50)
     if aux > 23:
         return 23
     if aux < -23:
@@ -680,23 +664,19 @@ def validate_angle(c_angle):
     return c_angle
 
 
+def validate_increase(i_speed):
+    global max_increase_speed
+    if i_speed >= max_increase_speed - 1:
+        return i_speed - 2
+    if i_speed <= -max_increase_speed + 1:
+        return i_speed + 1
+
+
 def prepare_speed(c_angle):
     global base_speed
     global increase_speed
-    if c_angle < -17:
-        value = base_speed * 0.225 + base_speed + increase_speed
-    elif c_angle < -13:
-        value = base_speed * 0.185 + base_speed + increase_speed
-    elif c_angle < -10:
-        value = base_speed * 0.135 + base_speed + increase_speed
-    elif c_angle < -8:
-        value = base_speed
-    elif c_angle > 18:
-        value = base_speed * 0.145 + base_speed + increase_speed
-    elif c_angle > 15:
-        value = base_speed * 0.125 + base_speed + increase_speed
-    elif c_angle > 12:
-        value = base_speed * 0.1 + base_speed + increase_speed
+    if float(-18) < c_angle > float(18):
+        value = base_speed + validate_increase(increase_speed)
     else:
         value = base_speed + increase_speed
     return float(value)
@@ -706,12 +686,15 @@ def all_are_the_same_or_near(lines):
     if lines is None or len(lines) <= 1:
         return False
     reference = lines[0]
+
+    if len(reference) < 2:
+        return False
     l_ref, r_ref = reference[0:2]
     l_flag = False
     r_flag = False
     for i in range(1, len(lines)):
         l_line, r_line = lines[i][0:2]
-        if (l_ref is None and l_line is not None) or (r_ref is None and r_line is not None) or\
+        if (l_ref is None and l_line is not None) or (r_ref is None and r_line is not None) or \
                 (l_ref is not None and l_line is None) or (r_ref is not None and r_line is None):
             return False
         if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 20:
@@ -723,8 +706,10 @@ def all_are_the_same_or_near(lines):
 
 
 def pop_first(items):
+
     if len(items) < 2:
         return []
+    print('popped')
     aux = []
     for i in range(1, len(items)):
         aux.append(items[i])
@@ -733,15 +718,17 @@ def pop_first(items):
 
 def downgrade_speed():
     global base_speed
-    base_speed -=0.5
-    
-    
+    base_speed -= 0.5
+
+
 def car_started():
     global base_speed, speed_const
     wait(1)
     base_speed = speed_const - 1
 
 
+threads_off = False
+max_increase_speed = 4
 speed_const = 17.5
 horizontal_zone_from = 0.70
 horizontal_zone_to = 0.95
@@ -761,10 +748,120 @@ angle_coefficient = 10.5
 is_brake = True
 frame_count = 0
 speed_accuracy_stack = []
+listen_to_lines = True
+
+
+# Diff section
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import SerialHandler
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+
+def forward(speed, angle=0.0):
+    serialHandler.sendMove(speed, angle)
+    do_nothing()
+
+
+def stop(angle=0.0):
+    serialHandler.sendBrake(angle)
+    do_nothing()
+
+
+def event_listener():
+    import serial
+    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
+    while True:
+        message = usb_com.readline()
+        if message == constant.IS_DAY:
+            night_light_off()
+            do_nothing()
+        if message == constant.IS_NIGHT:
+            night_light_on()
+            do_nothing()
+        if message == constant.OBJECT_IN_BACK:
+            # object detected function
+            do_nothing()
+        if message == constant.OBJECT_IN_FRONT:
+            # object detected function
+            do_nothing()
+
+
+def signaling_left():
+    for i in range(0, 2):
+        GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
+        wait(0.5)
+        GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+        wait(0.5)
+    do_nothing()
+
+
+def signaling_right():
+    for i in range(0, 2):
+        GPIO.setup(constant.signals[constant.RIGHT_YELLOW], GPIO.OUT)
+        wait(0.5)
+        GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+        wait(0.5)
+    do_nothing()
+
+
+def stop_lights_on():
+    GPIO.setup(constant.signals[constant.STOP_LIGHT], GPIO.OUT)
+    do_nothing()
+
+
+def stop_lights_off():
+    GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.LOW)
+    do_nothing()
+
+
+def blue_light_on():
+    GPIO.setup(constant.signals[constant.BLUE_LIGHT], GPIO.OUT)
+    do_nothing()
+
+
+def blue_light_off():
+    GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.LOW)
+    do_nothing()
+
+
+def night_light_on():
+    GPIO.setup(constant.signals[constant.NIGHT_LIGHT], GPIO.OUT)
+    do_nothing()
+
+
+def night_light_off():
+    GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.LOW)
+    do_nothing()
+
+
+def back_mode_on():
+    GPIO.setup(constant.signals[constant.BACK_LIGHT], GPIO.OUT)
+    do_nothing()
+
+
+def back_mode_off():
+    GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.LOW)
+    do_nothing()
+
+
+serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
+serialHandler.startReadThread()
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 20
+rawCapture = PiRGBArray(camera, size=(640, 480))
+time.sleep(0.1)
 try:
+    listener_thread = threading.Thread(target=event_listener, args=())
+    listener_thread.start()
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        base_speed = backup_base_speed
         frame = camera_frame.array
+
+# end diff section
+
         frame_count += 1
         if frame_count < 2:
             x = threading.Thread(target=car_started, args=())
@@ -773,30 +870,25 @@ try:
             forward(speed, angle)
         else:
             forward(0.0, angle)
-#            stop(angle)
-            print(angle, 'angle')
+        #            stop(angle)
         if listen_to_lines:
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
-            downgrade_speed()
-            cv2.imshow("test", cropped_image)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
-            height = frame.shape[1]
-            width = frame.shape[0]
+            height = frame.shape[0]
+            width = frame.shape[1]
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
             averaged_lines, lines_interrupted = average_slope_intercept(cropped_image, lines)
-            downgrade_speed()
             if averaged_lines is not None:
                 to_check_lines = make_average_lines(last_lines, averaged_lines)
                 last_lines = averaged_lines
                 line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-                
+
                 combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                 cv2.imshow("result", combo_image)
                 count = 0
-                downgrade_speed()
             else:
                 if count < 2:
                     to_check_lines = last_lines
@@ -808,21 +900,21 @@ try:
                     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
-                downgrade_speed()
-                if len(speed_accuracy_stack) < 5:
-                    if angle <= float(18) and angle >=float(-18):
-                        increase_speed = 0
+                if len(speed_accuracy_stack) < 6:
                     speed_accuracy_stack.append(to_check_lines)
-                    
+
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
-                    if angle >= float(18) or angle <= float(-18):
-                        if increase_speed > -3:
-                            increase_speed -= 0.5
+                    if increase_speed > -max_increase_speed:
+                        increase_speed -= 0.5
+                    if increase_speed < -max_increase_speed/2:
+                        stop_lights_on()
+                    else:
+                        stop_lights_off()
                 elif len(speed_accuracy_stack) >= 5:
-                    if increase_speed < 3:
-                        increase_speed += 0.25
+                    if increase_speed < max_increase_speed:
+                        increase_speed += 0.5
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 all_are_the_same_or_near(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
@@ -838,8 +930,8 @@ try:
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
-                    if height * horizontal_zone_to < y2 >= height * horizontal_zone_from and \
-                            height * horizontal_zone_to < y1 >= height * horizontal_zone_from:
+                    if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
+                            height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
                         x.start()
                         y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
@@ -856,7 +948,16 @@ try:
                         angle = validate_angle(convert_space_to_angle(space, calculated_angle))
                         print(speed, angle, space, calculated_angle)
                 speed = prepare_speed(angle)
+                if speed < -5:
+                    back_mode_on()
+                else:
+                    back_mode_off()
 
+            else:
+                cv2.imshow("result", frame)
+                c_key = cv2.waitKey(1)
+                if c_key == ord('g'):
+                    break
             key = cv2.waitKey(1)
             if key == ord('p'):
                 x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
@@ -869,12 +970,12 @@ try:
                     time.sleep(1)
             if key == ord('q'):
                 break
-            cv2.imshow("result", frame)
         else:
             cv2.imshow("result", frame)
             c_key = cv2.waitKey(1)
             if c_key == ord('g'):
                 break
+                # another diff section
         rawCapture.truncate(0)
     cv2.destroyAllWindows()
     stop()
