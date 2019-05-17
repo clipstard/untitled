@@ -9,12 +9,11 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-    #    constant.PARKING,
-    #    constant.RIGHT,
-    #    constant.LEFT,
-    #    constant.RIGHT,
-    #    constant.LEFT,
-    #    constant.FINISH
+    constant.RIGHT,
+    constant.LEFT,
+    constant.RIGHT,
+    constant.LEFT,
+    constant.FINISH
 ]
 
 
@@ -29,19 +28,34 @@ def custom_wait(seconds):
         pass
 
 
-def after_stop_left():
-    print('i try')
-    forward(17.5)
-    wait(1.3)
+def after_stop_left(move_specific=None):
+    left_specific = None
+    right_specific = None
+    if move_specific is not None:
+        left_specific, right_specific = move_specific
+    if left_specific is not None:
+        forward(17.5 + float(left_specific / 500), - float(left_specific / 500))
+        wait(1.3 + float(left_specific / 500))
+    else:
+        forward(17.5)
+        wait(1.3)
     forward(21.0, -22.0)
-    wait(3)
+    wait(3.1)
     forward(0.0)
     do_nothing()
 
 
-def after_stop_right():
-    global speed
-    forward(17.5)
+def after_stop_right(move_specific=None):
+    left_specific = None
+    right_specific = None
+    if move_specific is not None:
+        left_specific, right_specific = move_specific
+    if right_specific is not None:
+        forward(17.5 + float(right_specific / 500), - float(right_specific / 500))
+        wait(0.6 + float(right_specific / 500))
+    else:
+        forward(17.5)
+        wait(0.6)
     wait(0.6)
     forward(17.5, 22.5)
     wait(2.6)
@@ -71,27 +85,32 @@ def after_stop_forward():
     do_nothing()
 
 
-def move_in_intersection(direction):
+def move_in_intersection(direction, delay=0.0, move_specific=None):
     global threads_off
     global listen_to_lines
     global base_speed
     global frame_count
-    listen_to_lines = False
-    print(direction)
+    global action_index
+
     if direction == constant.LEFT and not threads_off:
+        listen_to_lines = False
         x_thread = threading.Thread(target=signaling_left, args=())
         x_thread.start()
-        after_stop_left()
+        after_stop_left(move_specific)
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
+        listen_to_lines = False
         x_thread = threading.Thread(target=signaling_right, args=())
         x_thread.start()
-        after_stop_right()
+        after_stop_right(move_specific)
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
+        listen_to_lines = False
         wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
+        wait(delay)
+        listen_to_lines = False
         forward(0.0)
         for i in range(0, 3):
             print("%d," % (i + 1))
@@ -99,6 +118,7 @@ def move_in_intersection(direction):
         print('go')
         listen_to_lines = True
         stop_lights_off()
+        move_in_intersection(const_actions[action_index])
     elif not threads_off:
         wait(4.0)
     listen_to_lines = True
@@ -479,7 +499,7 @@ def region_of_interest(image):
     ])
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
-    #    cv2.fillPoly(mask, vid, 0)
+    cv2.fillPoly(mask, vid, 0)
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
@@ -730,6 +750,22 @@ def avg(item1, item2):
     return int((abs(item1) + abs(item2)) / 2)
 
 
+def guess_space_direction(lines):
+    if lines is not None:
+        left_line, right_line = lines
+        if left_line is None:
+            return constant.RIGHT
+        if right_line is None:
+            return constant.LEFT
+        lx1, ly1, lx2, ly2 = left_line
+        rx1, ry1, rx2, ry2 = right_line
+        if lx1 < rx1:
+            return constant.RIGHT
+        else:
+            return constant.LEFT
+    return constant.FORWARD
+
+
 stop_stack = []
 last_valid_angle = 0
 close_thread = False
@@ -751,11 +787,14 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
-is_brake = False
+is_brake = True
 frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
 urgent_break = False
+space = 0
+space_direction = constant.FORWARD
+spacing = [None, None]
 
 
 # diff section
@@ -844,6 +883,13 @@ try:
         #            x = threading.Thread(target=car_started, args=())
         #            x.start()
         #            stop(angle)
+        if urgent_break:
+            break
+        frame_count += 1
+        #        if frame_count < 2:
+        #            x = threading.Thread(target=car_started, args=())
+        #            x.start()
+        #            stop(angle)
         if listen_to_lines:
             if not is_brake:
                 forward(speed, angle)
@@ -855,6 +901,7 @@ try:
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
+            print(width, height)
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
@@ -915,18 +962,23 @@ try:
                     else:
                         stop_stack = []
                     if len(stop_stack) >= 3:
-                        print(y1, y2, "---------------------------------------")
                         stop_stack = []
-                        wait(avg(y2, y1) / 50)
-                        move_in_intersection(constant.STOP)
-
-                        y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
-                        y.start()
+                        wait_time = avg(y2, y1) / 500
+                        if space:
+                            space_direction = guess_space_direction(to_check_lines[0:2])
+                            if space_direction == constant.LEFT:
+                                spacing = [space, None]
+                            elif space_direction == constant.RIGHT:
+                                spacing = [None, space]
+                            else:
+                                spacing = [None, None]
+                        x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
+                        x.start()
 
                         action_index += 1
                         print(action_index, len(const_actions))
                         if action_index >= len(const_actions):
-                            while y.isAlive():
+                            while x.isAlive():
                                 do_nothing()
                             break
                         do_nothing()
@@ -952,24 +1004,18 @@ try:
                 speed = prepare_speed(angle)
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
-                if c_key == ord('g'):
+                if c_key == ord('q'):
                     break
             key = cv2.waitKey(1)
             if key == ord('p'):
                 x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
                 x.start()
-            if key == ord('g'):
-                while True:
-                    c_key = cv2.waitKey(1)
-                    if c_key == ord('g'):
-                        break
-                    time.sleep(1)
             if key == ord('q'):
                 break
         else:
             cv2.imshow("result", frame)
             c_key = cv2.waitKey(1)
-            if c_key == ord('g'):
+            if c_key == ord('q'):
                 break
             #  another diff section
     cap.release()

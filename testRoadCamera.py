@@ -28,19 +28,34 @@ def custom_wait(seconds):
         pass
 
 
-def after_stop_left():
-    print('i try')
-    forward(17.5)
-    wait(1.3)
+def after_stop_left(move_specific=None):
+    left_specific = None
+    right_specific = None
+    if move_specific is not None:
+        left_specific, right_specific = move_specific
+    if left_specific is not None:
+        forward(17.5 + float(left_specific / 500), - float(left_specific / 500))
+        wait(1.3 + float(left_specific / 500))
+    else:
+        forward(17.5)
+        wait(1.3)
     forward(21.0, -22.0)
-    wait(3)
+    wait(3.1)
     forward(0.0)
     do_nothing()
 
 
-def after_stop_right():
-    global speed
-    forward(17.5)
+def after_stop_right(move_specific=None):
+    left_specific = None
+    right_specific = None
+    if move_specific is not None:
+        left_specific, right_specific = move_specific
+    if right_specific is not None:
+        forward(17.5 + float(right_specific / 500), - float(right_specific / 500))
+        wait(0.6 + float(right_specific / 500))
+    else:
+        forward(17.5)
+        wait(0.6)
     wait(0.6)
     forward(17.5, 22.5)
     wait(2.6)
@@ -70,27 +85,32 @@ def after_stop_forward():
     do_nothing()
 
 
-def move_in_intersection(direction):
+def move_in_intersection(direction, delay=0.0, move_specific=None):
     global threads_off
     global listen_to_lines
     global base_speed
     global frame_count
-    listen_to_lines = False
-    print(direction)
+    global action_index
+
     if direction == constant.LEFT and not threads_off:
+        listen_to_lines = False
         x_thread = threading.Thread(target=signaling_left, args=())
         x_thread.start()
-        after_stop_left()
+        after_stop_left(move_specific)
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
+        listen_to_lines = False
         x_thread = threading.Thread(target=signaling_right, args=())
         x_thread.start()
-        after_stop_right()
+        after_stop_right(move_specific)
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
+        listen_to_lines = False
         wait(1.0)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
+        wait(delay)
+        listen_to_lines = False
         forward(0.0)
         for i in range(0, 3):
             print("%d," % (i + 1))
@@ -98,6 +118,7 @@ def move_in_intersection(direction):
         print('go')
         listen_to_lines = True
         stop_lights_off()
+        move_in_intersection(const_actions[action_index])
     elif not threads_off:
         wait(4.0)
     listen_to_lines = True
@@ -729,6 +750,22 @@ def avg(item1, item2):
     return int((abs(item1) + abs(item2)) / 2)
 
 
+def guess_space_direction(lines):
+    if lines is not None:
+        left_line, right_line = lines
+        if left_line is None:
+            return constant.RIGHT
+        if right_line is None:
+            return constant.LEFT
+        lx1, ly1, lx2, ly2 = left_line
+        rx1, ry1, rx2, ry2 = right_line
+        if lx1 < rx1:
+            return constant.RIGHT
+        else:
+            return constant.LEFT
+    return constant.FORWARD
+
+
 stop_stack = []
 last_valid_angle = 0
 close_thread = False
@@ -755,12 +792,16 @@ frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
 urgent_break = False
+space = 0
+space_direction = constant.FORWARD
+spacing = [None, None]
 
 # Diff section
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import SerialHandler
 import RPi.GPIO as GPIO
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -781,17 +822,18 @@ def count2():
     close_thread = True
     return True
 
+
 def event_listener():
     global threads_off
     global close_thread
     import serial
-#    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
+    #    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
     aux_thread = threading.Thread(target=count2, args=())
     aux_thread.start()
     while True:
         if threads_off or close_thread:
             break
-#        message = usb_com.readline()
+        #        message = usb_com.readline()
         message = "123"
         if message == constant.IS_DAY:
             night_light_off()
@@ -888,8 +930,8 @@ def test_program():
     forward(20.0)
     wait(1)
     stop()
-    
-    
+
+
 def test_parking():
     global listen_to_lines
     global urgent_break
@@ -898,7 +940,7 @@ def test_parking():
     parking_action()
     urgent_break = True
     listen_to_lines = True
-    
+
 
 serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
 serialHandler.startReadThread()
@@ -911,19 +953,19 @@ init_gpi()
 try:
     blue_light_on()
     event_listener()
-#    test_program()
-#    listener_thread = threading.Thread(target=event_listener, args=())
-#    listener_thread.start()
+    #    test_program()
+    #    listener_thread = threading.Thread(target=event_listener, args=())
+    #    listener_thread.start()
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         frame = camera_frame.array
 
-# end diff section
+        # end diff section
         if urgent_break:
             break
         frame_count += 1
-#        if frame_count < 2:
-#            x = threading.Thread(target=car_started, args=())
-#            x.start()
+        #        if frame_count < 2:
+        #            x = threading.Thread(target=car_started, args=())
+        #            x.start()
         #            stop(angle)
         if urgent_break:
             break
@@ -1005,16 +1047,22 @@ try:
                         stop_stack = []
                     if len(stop_stack) >= 3:
                         stop_stack = []
-                        wait(avg(y2, y1) / 50)
-                        move_in_intersection(constant.STOP)
-
-                        y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
-                        y.start()
+                        wait_time = avg(y2, y1) / 500
+                        if space:
+                            space_direction = guess_space_direction(to_check_lines[0:2])
+                            if space_direction == constant.LEFT:
+                                spacing = [space, None]
+                            elif space_direction == constant.RIGHT:
+                                spacing = [None, space]
+                            else:
+                                spacing = [None, None]
+                        x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
+                        x.start()
 
                         action_index += 1
                         print(action_index, len(const_actions))
                         if action_index >= len(const_actions):
-                            while y.isAlive():
+                            while x.isAlive():
                                 do_nothing()
                             break
                         do_nothing()
@@ -1040,24 +1088,18 @@ try:
                 speed = prepare_speed(angle)
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
-                if c_key == ord('g'):
+                if c_key == ord('q'):
                     break
             key = cv2.waitKey(1)
             if key == ord('p'):
                 x = threading.Thread(target=move_in_intersection, args=(constant.STOP,))
                 x.start()
-            if key == ord('g'):
-                while True:
-                    c_key = cv2.waitKey(1)
-                    if c_key == ord('g'):
-                        break
-                    time.sleep(1)
             if key == ord('q'):
                 break
         else:
             cv2.imshow("result", frame)
             c_key = cv2.waitKey(1)
-            if c_key == ord('g'):
+            if c_key == ord('q'):
                 break
                 # another diff section
         rawCapture.truncate(0)
