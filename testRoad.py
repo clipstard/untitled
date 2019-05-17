@@ -626,7 +626,6 @@ def new_angle(lines):
     global height
     global width
     coefficients = [None, None]
-    print(len(lines), '<= len lines')
     if len(lines) == 1:
         line = lines[0]
         x1, y1, x2, y2 = line
@@ -931,20 +930,17 @@ try:
             if to_check_lines is not None:
                 if len(speed_accuracy_stack) < 6:
                     speed_accuracy_stack.append(to_check_lines[0:2])
-
-                if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
-                    base_speed = backup_base_speed
-                    speed_accuracy_stack = []
-                    if 0 <= increase_speed > -max_increase_speed:
+                    if 0 >= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
-                        print('decrease')
                     elif increase_speed > 0:
                         increase_speed = 0
-                        print('zero')
                     if increase_speed < -max_increase_speed / 2:
                         stop_lights_on()
                     else:
                         stop_lights_off()
+                if len(speed_accuracy_stack) > 2 and not all_are_the_same_or_near(speed_accuracy_stack):
+                    base_speed = backup_base_speed
+                    speed_accuracy_stack = []
                 elif len(speed_accuracy_stack) >= 6:
                     if increase_speed < max_increase_speed:
                         if len(to_check_lines) >= 2:
