@@ -9,12 +9,12 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-#    constant.PARKING,
-#    constant.RIGHT,
-#    constant.LEFT,
-#    constant.RIGHT,
-#    constant.LEFT,
-#    constant.FINISH
+    #    constant.PARKING,
+    #    constant.RIGHT,
+    #    constant.LEFT,
+    #    constant.RIGHT,
+    #    constant.LEFT,
+    #    constant.FINISH
 ]
 
 
@@ -203,7 +203,6 @@ def reduce_horizontals(array):
 def reduce_horizontals2(array):
     global height
     global horizontal_zone_from
-    global horizontal_zone_to
     if array is None:
         return None
     aux = []
@@ -213,7 +212,7 @@ def reduce_horizontals2(array):
             abs_y = abs(y2 - y1)
             if abs_y == 0:
                 abs_y = 1
-            if abs(x1 - x2) / abs_y > 5 and x1 < height * horizontal_zone_from > x2:
+            if abs(x1 - x2) / abs_y > 5 and y1 < height * horizontal_zone_from > y2:
                 continue
             else:
                 aux.append([[x1, y1, x2, y2]])
@@ -469,8 +468,8 @@ def region_of_interest(image):
     width = image.shape[1]
     polygons = np.array([
         [(-140, height),
-         (0 + int(width / 5), int(height * 1.3) - int(height / 2)),
-         (width - int(width / 5), int(height * 1.3) - int(height / 2)),
+         (0 + int(width / 6), int(height) - int(height / 2)),
+         (width - int(width / 6), int(height) - int(height / 2)),
          (width + 140, height)]
     ])
     vid = np.array([
@@ -708,7 +707,6 @@ def all_are_the_same_or_near(lines):
 
 
 def pop_first(items):
-
     if len(items) < 2:
         return []
     aux = []
@@ -728,13 +726,18 @@ def car_started():
     base_speed = speed_const - 1
 
 
+def avg(item1, item2):
+    return int((abs(item1) + abs(item2)) / 2)
+
+
+stop_stack = []
 last_valid_angle = 0
 close_thread = False
 threads_off = False
 max_increase_speed = 4
 speed_const = 17.0
-horizontal_zone_from = 0.8
-horizontal_zone_to = 0.95
+horizontal_zone_from = 0.5
+horizontal_zone_to = 0.9
 count = 0
 last_lines = []
 increase_speed = 0
@@ -753,7 +756,6 @@ frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
 urgent_break = False
-
 
 # Diff section
 from picamera.array import PiRGBArray
@@ -926,6 +928,13 @@ try:
 #            x = threading.Thread(target=car_started, args=())
 #            x.start()
         #            stop(angle)
+        if urgent_break:
+            break
+        frame_count += 1
+        #        if frame_count < 2:
+        #            x = threading.Thread(target=car_started, args=())
+        #            x.start()
+        #            stop(angle)
         if listen_to_lines:
             if not is_brake:
                 forward(speed, angle)
@@ -933,13 +942,11 @@ try:
                 forward(0.0, angle)
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
-#            cv2.imshow("test", cropped_image)
+            cv2.imshow("test", cropped_image)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
             lines = reduce_invalid(lines, height, width)
-            if lines is not None:
-                print(len(lines))
             lines = reduce_horizontals2(lines)
             to_check_lines = None
             averaged_lines, lines_interrupted = average_slope_intercept(cropped_image, lines)
@@ -950,7 +957,7 @@ try:
 
                 combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                 cv2.imshow("result", combo_image)
-                count = 0
+                count = 1
             else:
                 if count < 2:
                     to_check_lines = last_lines
@@ -963,18 +970,16 @@ try:
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
                 if len(speed_accuracy_stack) < 6:
-                    print(to_check_lines[0:2])
                     speed_accuracy_stack.append(to_check_lines[0:2])
 
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
-                    print('problem')
                     if 0 <= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
                     elif increase_speed > 0:
                         increase_speed = 0
-                    if increase_speed < -max_increase_speed/2:
+                    if increase_speed < -max_increase_speed / 2:
                         stop_lights_on()
                     else:
                         stop_lights_off()
@@ -997,17 +1002,24 @@ try:
                         print('here')
                     if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
+                        stop_stack.append(True)
+                    else:
+                        stop_stack = []
+                    if len(stop_stack) >= 3:
+                        stop_stack = []
+                        wait(avg(y2, y1) / 50)
                         move_in_intersection(constant.STOP)
 
                         y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
                         y.start()
-                
+
                         action_index += 1
                         print(action_index, len(const_actions))
                         if action_index >= len(const_actions):
                             while y.isAlive():
                                 do_nothing()
                             break
+                        do_nothing()
                 if 1000 < calculated_angle < 15000:
                     angle = 0.0
                 else:

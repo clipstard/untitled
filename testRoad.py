@@ -9,12 +9,12 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-#    constant.PARKING,
-#    constant.RIGHT,
-#    constant.LEFT,
-#    constant.RIGHT,
-#    constant.LEFT,
-#    constant.FINISH
+    #    constant.PARKING,
+    #    constant.RIGHT,
+    #    constant.LEFT,
+    #    constant.RIGHT,
+    #    constant.LEFT,
+    #    constant.FINISH
 ]
 
 
@@ -32,7 +32,7 @@ def custom_wait(seconds):
 def after_stop_left():
     print('i try')
     forward(17.5)
-    wait(0.9)
+    wait(1.3)
     forward(21.0, -22.0)
     wait(3)
     forward(0.0)
@@ -43,24 +43,24 @@ def after_stop_right():
     global speed
     forward(17.5)
     wait(0.6)
-    forward(17.5, 23.0)
-    wait(2.7)
+    forward(17.5, 22.5)
+    wait(2.6)
     do_nothing()
     forward(0.0)
 
 
 def parking_action():
-    forward(-19, 22)
+    forward(-18, 22)
     wait(1.5)
     forward(-17, 0)
     wait(0.8)
-    forward(-21, -22)
-    wait(1.7)
-    forward(-19, 0)
-    wait(1.1)
+    forward(-20, -22)
+    wait(1.5)
+    forward(-17, 0)
+    wait(1)
     stop()
     wait(0.5)
-    forward(18, 0)
+    forward(17, 0)
     wait(2)
     stop()
 
@@ -79,13 +79,13 @@ def move_in_intersection(direction):
     listen_to_lines = False
     print(direction)
     if direction == constant.LEFT and not threads_off:
-#        x_thread = threading.Thread(target=signaling_left, args=())
-#        x_thread.start()
+        x_thread = threading.Thread(target=signaling_left, args=())
+        x_thread.start()
         after_stop_left()
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
-#        x_thread = threading.Thread(target=signaling_right, args=())
-#        x_thread.start()
+        x_thread = threading.Thread(target=signaling_right, args=())
+        x_thread.start()
         after_stop_right()
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
@@ -203,7 +203,6 @@ def reduce_horizontals(array):
 def reduce_horizontals2(array):
     global height
     global horizontal_zone_from
-    global horizontal_zone_to
     if array is None:
         return None
     aux = []
@@ -213,7 +212,7 @@ def reduce_horizontals2(array):
             abs_y = abs(y2 - y1)
             if abs_y == 0:
                 abs_y = 1
-            if abs(x1 - x2) / abs_y > 5 and x1 < height * horizontal_zone_from > x2:
+            if abs(x1 - x2) / abs_y > 5 and y1 < height * horizontal_zone_from > y2:
                 continue
             else:
                 aux.append([[x1, y1, x2, y2]])
@@ -468,10 +467,10 @@ def region_of_interest(image):
     height = image.shape[0]
     width = image.shape[1]
     polygons = np.array([
-        [(-155, height),
-         (0 + int(width / 4), height - int(height / 2)),
-         (width - int(width / 4), height - int(height / 2)),
-         (width + 155, height)]
+        [(-140, height),
+         (0 + int(width / 6), int(height) - int(height / 2)),
+         (width - int(width / 6), int(height) - int(height / 2)),
+         (width + 140, height)]
     ])
     vid = np.array([
         [(0, height),
@@ -600,6 +599,7 @@ def new_angle(lines):
             coefficients[1] = (width - x1)
     if len(lines) == 2:
         left_line, right_line = lines
+        print(lines, 'lines')
         if left_line is not None and right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             lx1, ly1, lx2, ly2 = left_line
@@ -646,9 +646,9 @@ def convert_space_to_angle(space, calculated_coefficient):
         sign = 1
     if -1 < calculated_coefficient < 1:
         space = space * 2.5
-        calculated_coefficient = abs(calculated_coefficient * 10)
+        calculated_coefficient = abs(calculated_coefficient * 9)
     else:
-        calculated_coefficient = abs(calculated_coefficient * 11)
+        calculated_coefficient = abs(calculated_coefficient * 10)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
     aux = (calculated_coefficient + float(space / 50)) * sign
@@ -656,7 +656,7 @@ def convert_space_to_angle(space, calculated_coefficient):
 
 
 def validate_angle(c_angle):
-    if c_angle >= 22.5:
+    if c_angle >= 22:
         return 23
     if c_angle <= -22.5:
         return -22
@@ -694,9 +694,10 @@ def all_are_the_same_or_near(lines):
     r_flag = False
     for i in range(1, len(lines)):
         l_line, r_line = lines[i][0:2]
-        if (l_ref is None and l_line is not None) or (r_ref is None and r_line is not None) or \
-                (l_ref is not None and l_line is None) or (r_ref is not None and r_line is None):
-            return False
+        if (l_ref is None and l_line is not None) or (l_ref is not None and l_line is None):
+            l_flag = True
+        if (r_ref is None and r_line is not None) or (r_ref is not None and r_line is None):
+            r_flag = True
         if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 40:
             l_flag = True
         if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 40:
@@ -706,10 +707,8 @@ def all_are_the_same_or_near(lines):
 
 
 def pop_first(items):
-
     if len(items) < 2:
         return []
-    print('popped')
     aux = []
     for i in range(1, len(items)):
         aux.append(items[i])
@@ -727,12 +726,18 @@ def car_started():
     base_speed = speed_const - 1
 
 
+def avg(item1, item2):
+    return int((abs(item1) + abs(item2)) / 2)
+
+
+stop_stack = []
+last_valid_angle = 0
 close_thread = False
 threads_off = False
 max_increase_speed = 4
-speed_const = 17.5
-horizontal_zone_from = 0.8
-horizontal_zone_to = 0.95
+speed_const = 17.0
+horizontal_zone_from = 0.5
+horizontal_zone_to = 0.9
 count = 0
 last_lines = []
 increase_speed = 0
@@ -746,10 +751,11 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
-is_brake = True
+is_brake = False
 frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
+urgent_break = False
 
 
 # diff section
@@ -808,7 +814,6 @@ def back_mode_on():
 
 
 def back_mode_off():
-
     do_nothing()
 
 
@@ -831,12 +836,13 @@ try:
     while cap.isOpened():
         _, frame = cap.read()
 
-    # end diff section
-
+        # end diff section
+        if urgent_break:
+            break
         frame_count += 1
-        if frame_count < 2:
-            x = threading.Thread(target=car_started, args=())
-            x.start()
+        #        if frame_count < 2:
+        #            x = threading.Thread(target=car_started, args=())
+        #            x.start()
         #            stop(angle)
         if listen_to_lines:
             if not is_brake:
@@ -860,7 +866,7 @@ try:
 
                 combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                 cv2.imshow("result", combo_image)
-                count = 0
+                count = 1
             else:
                 if count < 2:
                     to_check_lines = last_lines
@@ -878,7 +884,6 @@ try:
                 if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
                     base_speed = backup_base_speed
                     speed_accuracy_stack = []
-                    print('problem')
                     if 0 <= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
                     elif increase_speed > 0:
@@ -906,17 +911,26 @@ try:
                         print('here')
                     if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
-                        # move_in_intersection(constant.STOP)
+                        stop_stack.append(True)
+                    else:
+                        stop_stack = []
+                    if len(stop_stack) >= 3:
+                        print(y1, y2, "---------------------------------------")
+                        stop_stack = []
+                        wait(avg(y2, y1) / 50)
+                        move_in_intersection(constant.STOP)
 
-                        # y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
-                        # y.start()
+                        y = threading.Thread(target=move_in_intersection, args=(const_actions[action_index],))
+                        y.start()
 
                         action_index += 1
-                        # if action_index >= len(const_actions):
-                        #     # while y.isAlive():
-                        #     #     do_nothing()
-                        #     break
-                if -0.1 < calculated_angle < 0.1:
+                        print(action_index, len(const_actions))
+                        if action_index >= len(const_actions):
+                            while y.isAlive():
+                                do_nothing()
+                            break
+                        do_nothing()
+                if 1000 < calculated_angle < 15000:
                     angle = 0.0
                 else:
                     if -2.5 < calculated_angle < 2.5:
@@ -925,13 +939,17 @@ try:
                         angle = validate_angle(convert_space_to_angle(space, calculated_angle))
                         print(speed, angle, space, calculated_angle)
                 speed = prepare_speed(angle)
+                last_valid_angle = angle
+                if -5 < angle < 5:
+                    speed = base_speed
                 if speed < -5:
                     back_mode_on()
                 else:
                     back_mode_off()
 
-
             else:
+                angle = last_valid_angle
+                speed = prepare_speed(angle)
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
                 if c_key == ord('g'):
@@ -963,4 +981,3 @@ except Exception as ex:
     stop()
     cv2.destroyAllWindows()
     threads_off = True
-
