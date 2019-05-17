@@ -9,12 +9,11 @@ const_actions = [
     constant.RIGHT,
     constant.LEFT,
     constant.FORWARD,
-    #    constant.PARKING,
-    #    constant.RIGHT,
-    #    constant.LEFT,
-    #    constant.RIGHT,
-    #    constant.LEFT,
-    #    constant.FINISH
+    constant.RIGHT,
+    constant.LEFT,
+    constant.RIGHT,
+    constant.LEFT,
+    constant.FINISH
 ]
 
 
@@ -479,7 +478,7 @@ def region_of_interest(image):
     ])
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
-    #    cv2.fillPoly(mask, vid, 0)
+    cv2.fillPoly(mask, vid, 0)
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
@@ -751,7 +750,7 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
-is_brake = False
+is_brake = True
 frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
@@ -912,8 +911,6 @@ init_gpi()
 try:
     blue_light_on()
     event_listener()
-    thr = threading.Thread(target=test_parking, args=())
-    thr.start()
 #    test_program()
 #    listener_thread = threading.Thread(target=event_listener, args=())
 #    listener_thread.start()
@@ -946,6 +943,7 @@ try:
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
+            print(width, height)
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
