@@ -4,6 +4,7 @@ import numpy as np
 import time
 import constant
 import threading
+import _thread
 
 const_actions = [
     constant.RIGHT,
@@ -779,6 +780,46 @@ def guess_space_direction(lines):
     return constant.FORWARD
 
 
+def car_in_parking_zone():
+    global waiting_for_stop
+    waiting_for_stop = False
+    do_nothing()
+    # listen for parking sign
+    wait(15)
+    waiting_for_stop = True
+
+
+def findSign(gray):
+    global parking_file, stop_file
+    res = None
+    if parking_file is None or stop_file is None:
+        return None
+    parkingi = parking_file.detectMultiScale(gray, 1.1, 5)
+    stopi = stop_file.detectMultiScale(gray, 1.1, 5)
+    for i, (x, y, w, h) in enumerate(parkingi):
+        res = ["Parking sign", x, y, x + w, y + h]
+
+    for i, (x, y, w, h) in enumerate(stopi):
+        res = ["Stop sign", x, y, x + w, y + h]
+
+    if res is not None:
+        return res
+    return None
+
+
+def desenare_linii(thread_title, aa):
+    global combo_image
+    if len(aa) > 3:
+        cv2.rectangle(combo_image, (aa[1], aa[2]), (aa[3], aa[4]), (0, 255, 0), 3)
+        cv2.putText(combo_image, aa[0], (aa[3], aa[4]), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (0, 0, 255),
+                    lineType=cv2.LINE_AA)
+        print("Stop")
+    else:
+        print(None)
+
+
+stop_file = None
+parking_file = None
 stop_stack = []
 last_valid_angle = 0
 close_thread = False
@@ -808,6 +849,8 @@ urgent_break = False
 space = 0
 space_direction = constant.FORWARD
 spacing = [None, None]
+waiting_for_stop = True
+first_load_files = True
 
 
 # diff section
@@ -963,11 +1006,20 @@ try:
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
-                    if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
+                    if waiting_for_stop and height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to and \
                             (x1 > width / 2 or abs(x1 - x2) > 150):
                         do_nothing()
                         stop_stack.append(True)
+                    elif not waiting_for_stop:
+                        if first_load_files:
+                            parking_file = cv2.CascadeClassifier('cascade.xml')
+                            stop_file = cv2.CascadeClassifier('stop.xml')
+                            first_load_files = False
+                        gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
+                        aa = findSign(gray)
+
+                        _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
                     else:
                         stop_stack = []
                     if len(stop_stack) >= 3:
@@ -984,6 +1036,9 @@ try:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
                         x.start()
 
+                        if const_actions[action_index] == constant.FORWARD:  # forward is 3-th element in scenario
+                            y = threading.Thread(target=car_in_parking_zone, args=())
+                            y.start()
                         if action_index >= len(const_actions):
                             while x.isAlive():
                                 do_nothing()
