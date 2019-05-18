@@ -851,6 +851,7 @@ space_direction = constant.FORWARD
 spacing = [None, None]
 waiting_for_stop = True
 first_load_files = True
+parking_sign_stack = []
 
 
 # Diff section
@@ -1101,7 +1102,13 @@ try:
                         gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
                         aa = findSign(gray)
 
-                        _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
+                        if aa is not None:
+                            parking_sign_stack.append(None)
+                        else:
+                            parking_sign_stack = []
+                        if len(parking_sign_stack) >= 3:
+                            parking_action()
+                        # _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
                     else:
                         stop_stack = []
                     if len(stop_stack) >= 3:
