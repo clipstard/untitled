@@ -1125,7 +1125,7 @@ try:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
                         x.start()
 
-                        if const_actions[action_index] == constant.FORWARD:  # forward is 3-th element in scenario
+                        if const_actions[action_index - 1] == constant.FORWARD:  # forward is 3-th element in scenario
                             y = threading.Thread(target=car_in_parking_zone, args=())
                             y.start()
                         if action_index >= len(const_actions):
