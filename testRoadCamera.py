@@ -7,8 +7,8 @@ import threading
 import _thread
 
 const_actions = [
-    constant.RIGHT,
-    constant.LEFT,
+#    constant.RIGHT,
+#    constant.LEFT,
     constant.FORWARD,
     constant.RIGHT,
     constant.LEFT,
@@ -38,24 +38,28 @@ def custom_wait(seconds):
 
 
 def after_stop_left(move_specific=None):
-    forward(15.5)
-    wait(1.6)
-    forward(19.0, -22.0)
-    wait(3.8)
+    local_speed = 16
+    forward(local_speed)
+    wait(1.2)
+    forward(local_speed + 3, -22.0)
+    wait(3.3)
     forward(0.0)
     do_nothing()
 
 
 def after_stop_right(move_specific=None):
-    forward(16)
-    wait(1.1)
-    forward(16, 22)
-    wait(2.9)
+    local_speed = 14.5
+    forward(local_speed)
+    wait(0.5)
+    forward(local_speed, 22)
+    wait(3.1)
     forward(0.0)
     do_nothing()
 
 
 def parking_action():
+    global waiting_for_stop
+    
     local_speed = 18
     forward(-local_speed + 1)
     wait(0.1)
@@ -86,6 +90,7 @@ def parking_action():
     forward(local_speed - 1)
     wait(0.5)
     stop()
+    waiting_for_stop = True
 
 
 def after_stop_forward():
@@ -680,12 +685,13 @@ def convert_space_to_angle(space, calculated_coefficient):
         sign = 1
     if -1 < calculated_coefficient < 1:
         space = space * 2.5
-        calculated_coefficient = abs(calculated_coefficient * 9)
+        calculated_coefficient = abs(calculated_coefficient * 8.5)
     else:
-        calculated_coefficient = abs(calculated_coefficient * 10)
+        space = space * 1.5
+        calculated_coefficient = abs(calculated_coefficient * 9.5)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient * sign + float(space / 45))
+    aux = (calculated_coefficient * sign + float(space / 55))
     return validate_angle(aux)
 
 
@@ -816,6 +822,23 @@ def desenare_linii(thread_title, aa):
         print("Stop")
     else:
         print(None)
+        
+        
+def process_sign(data):
+    if data is not None:
+        title, x1, y1, w, h = data
+        real_w = w - x1
+        real_h = h - y1
+        if real_w > 90 and real_h > 90:
+            return True
+    return False
+
+
+def all_are_true(items):
+    for i in items:
+        if not i:
+            return False
+    return True
 
 
 stop_file = None
@@ -826,7 +849,7 @@ close_thread = False
 threads_off = False
 max_increase_speed = 3.5
 speed_const = 15
-horizontal_zone_from = 0.8
+horizontal_zone_from = 0.75
 horizontal_zone_to = 0.9
 count = 0
 last_lines = []
@@ -1069,12 +1092,11 @@ try:
                     speed_accuracy_stack = []
                 elif len(speed_accuracy_stack) >= 6:
                     if increase_speed < max_increase_speed:
-                        if len(to_check_lines) >= 2:
-                            if -5 < angle < 5:
-                                do_nothing()
-                            else:
-                                increase_speed += 0.5
-                                print('increase')
+                        if float(-4) < angle < float(5):
+                            do_nothing()
+                        else:
+                            increase_speed += 0.5
+                            print('increase')
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if len(to_check_lines) == 3:
@@ -1090,9 +1112,9 @@ try:
                     except:
                         print('here')
                     if waiting_for_stop and height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
-                            height * horizontal_zone_from < y1 <= height * horizontal_zone_to and \
-                            (x1 > width / 2 or abs(x1 - x2) > 150):
+                            height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
                         do_nothing()
+                        print(line)
                         stop_stack.append(True)
                     elif not waiting_for_stop:
                         if first_load_files:
@@ -1103,15 +1125,16 @@ try:
                         aa = findSign(gray)
 
                         if aa is not None:
-                            parking_sign_stack.append(None)
+                            parking_sign_stack.append(process_sign(aa))
                         else:
                             parking_sign_stack = []
                         if len(parking_sign_stack) >= 3:
-                            parking_action()
+                            if all_are_true(parking_sign_stack):
+                                parking_action()
                         # _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
                     else:
                         stop_stack = []
-                    if len(stop_stack) >= 3:
+                    if len(stop_stack) >= 2:
                         stop_stack = []
                         wait_time = 0
                         if space:
@@ -1153,7 +1176,7 @@ try:
             else:
                 angle = last_valid_angle
                 speed = prepare_speed(angle)
-                no_lines_action()
+#                no_lines_action()
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
                 if c_key == ord('q'):
