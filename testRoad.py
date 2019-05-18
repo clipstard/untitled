@@ -4,6 +4,7 @@ import numpy as np
 import time
 import constant
 import threading
+import _thread
 
 const_actions = [
     constant.RIGHT,
@@ -22,6 +23,14 @@ def wait(seconds):
     time.sleep(seconds)
 
 
+def no_lines_action():
+    global angle
+    forward(0.0)
+    wait(1)
+    forward(-16, -angle)
+    wait(0.75)
+
+
 def custom_wait(seconds):
     now = time.time()
     while time.time() < now + seconds:
@@ -29,53 +38,53 @@ def custom_wait(seconds):
 
 
 def after_stop_left(move_specific=None):
-    left_specific = None
-    right_specific = None
-    if move_specific is not None:
-        left_specific, right_specific = move_specific
-    if left_specific is not None:
-        forward(17.5 + float(left_specific / 500), - float(left_specific / 500))
-        wait(1.3 + float(left_specific / 500))
-    else:
-        forward(17.5)
-        wait(1.3)
-    forward(21.0, -22.0)
-    wait(3.1)
+    forward(15.5)
+    wait(1.6)
+    forward(19.0, -22.0)
+    wait(3.8)
     forward(0.0)
     do_nothing()
 
 
 def after_stop_right(move_specific=None):
-    left_specific = None
-    right_specific = None
-    if move_specific is not None:
-        left_specific, right_specific = move_specific
-    if right_specific is not None:
-        forward(17.5 + float(right_specific / 500), - float(right_specific / 500))
-        wait(0.6 + float(right_specific / 500))
-    else:
-        forward(17.5)
-        wait(0.6)
-    wait(0.6)
-    forward(17.5, 22.5)
-    wait(2.6)
-    do_nothing()
+    forward(16)
+    wait(1.1)
+    forward(16, 22)
+    wait(2.9)
     forward(0.0)
+    do_nothing()
 
 
 def parking_action():
-    forward(-18, 22)
+    local_speed = 18
+    forward(-local_speed + 1)
+    wait(0.1)
+    forward(-local_speed + 1, 22)
+    wait(1.8)
+    forward(-local_speed + 1, 0)
+    wait(0.7)
+    forward(-local_speed - 1, -22)
+    wait(1.6)
+    forward(-local_speed + 1, 0)
+    wait(0.5)
+    forward(0.0)
+    wait(0.5)
+    forward(local_speed - 1, 0)
+    wait(2.1)
+    stop()
     wait(1.5)
-    forward(-17, 0)
-    wait(0.8)
-    forward(-20, -22)
-    wait(1.5)
-    forward(-17, 0)
+    forward(-local_speed + 1, 0)
     wait(1)
     stop()
     wait(0.5)
-    forward(17, 0)
-    wait(2)
+    forward(local_speed + 1, -22)
+    wait(1.7)
+    forward(local_speed - 2)
+    wait(0.7)
+    forward(local_speed - 1, 22)
+    wait(1.6)
+    forward(local_speed - 1)
+    wait(0.5)
     stop()
 
 
@@ -99,14 +108,17 @@ def move_in_intersection(direction, delay=0.0, move_specific=None):
         after_stop_left(move_specific)
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
+
         listen_to_lines = False
         x_thread = threading.Thread(target=signaling_right, args=())
         x_thread.start()
         after_stop_right(move_specific)
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
+
         listen_to_lines = False
-        wait(1.0)
+        forward(17.0)
+        wait(2.50)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
         wait(delay)
@@ -119,6 +131,7 @@ def move_in_intersection(direction, delay=0.0, move_specific=None):
         listen_to_lines = True
         stop_lights_off()
         move_in_intersection(const_actions[action_index])
+        action_index += 1
     elif not threads_off:
         wait(4.0)
     listen_to_lines = True
@@ -492,11 +505,15 @@ def region_of_interest(image):
          (width - int(width / 6), int(height) - int(height / 2)),
          (width + 140, height)]
     ])
+    # *******
     vid = np.array([
-        [(0, height),
-         (width, height),
-         (int(width / 2), height - int(height / 3))]
+        [(50, height),
+         (int(width / 5), height - int(height / 5.5)),
+         (int(width - width / 5), height - int(height / 5.5)),
+         (width - 50, height)
+         ]
     ])
+    # *******
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
     cv2.fillPoly(mask, vid, 0)
@@ -619,7 +636,6 @@ def new_angle(lines):
             coefficients[1] = (width - x1)
     if len(lines) == 2:
         left_line, right_line = lines
-        print(lines, 'lines')
         if left_line is not None and right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             lx1, ly1, lx2, ly2 = left_line
@@ -632,16 +648,14 @@ def new_angle(lines):
             lx1, ly1, lx2, ly2 = left_line
             coefficients[0] = lx1
 
-    if len(lines) == 3:
-        left_line, right_line, stop_line = lines
+    if len(lines) >= 3:
+        left_line, right_line, stop_line = lines[0:3]
         if right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
-            if rx1 < width:
-                coefficients[1] = width - rx1
+            coefficients[1] = width - rx1
         if left_line is not None:
             lx1, ly1, lx2, ly2 = left_line
-            if lx1 > 0:
-                coefficients[0] = lx1
+            coefficients[0] = lx1
 
     return coefficients
 
@@ -654,7 +668,7 @@ def process_lines_spaces(spaces):
         return right_space
     if right_space is None:
         return left_space
-    return abs(abs(left_space) - abs(right_space))
+    return right_space
 
 
 def convert_space_to_angle(space, calculated_coefficient):
@@ -671,7 +685,7 @@ def convert_space_to_angle(space, calculated_coefficient):
         calculated_coefficient = abs(calculated_coefficient * 10)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient + float(space / 50)) * sign
+    aux = (calculated_coefficient * sign + float(space / 45))
     return validate_angle(aux)
 
 
@@ -766,13 +780,53 @@ def guess_space_direction(lines):
     return constant.FORWARD
 
 
+def car_in_parking_zone():
+    global waiting_for_stop
+    waiting_for_stop = False
+    do_nothing()
+    # listen for parking sign
+    wait(15)
+    waiting_for_stop = True
+
+
+def findSign(gray):
+    global parking_file, stop_file
+    res = None
+    if parking_file is None or stop_file is None:
+        return None
+    parkingi = parking_file.detectMultiScale(gray, 1.1, 5)
+    stopi = stop_file.detectMultiScale(gray, 1.1, 5)
+    for i, (x, y, w, h) in enumerate(parkingi):
+        res = ["Parking sign", x, y, x + w, y + h]
+
+    for i, (x, y, w, h) in enumerate(stopi):
+        res = ["Stop sign", x, y, x + w, y + h]
+
+    if res is not None:
+        return res
+    return None
+
+
+def desenare_linii(thread_title, aa):
+    global combo_image
+    if len(aa) > 3:
+        cv2.rectangle(combo_image, (aa[1], aa[2]), (aa[3], aa[4]), (0, 255, 0), 3)
+        cv2.putText(combo_image, aa[0], (aa[3], aa[4]), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (0, 0, 255),
+                    lineType=cv2.LINE_AA)
+        print("Stop")
+    else:
+        print(None)
+
+
+stop_file = None
+parking_file = None
 stop_stack = []
 last_valid_angle = 0
 close_thread = False
 threads_off = False
-max_increase_speed = 4
-speed_const = 17.0
-horizontal_zone_from = 0.5
+max_increase_speed = 3.5
+speed_const = 15
+horizontal_zone_from = 0.8
 horizontal_zone_to = 0.9
 count = 0
 last_lines = []
@@ -787,7 +841,7 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 10.5
-is_brake = True
+is_brake = False
 frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
@@ -795,6 +849,9 @@ urgent_break = False
 space = 0
 space_direction = constant.FORWARD
 spacing = [None, None]
+waiting_for_stop = True
+first_load_files = True
+parking_sign_stack = []
 
 
 # diff section
@@ -879,17 +936,6 @@ try:
         if urgent_break:
             break
         frame_count += 1
-        #        if frame_count < 2:
-        #            x = threading.Thread(target=car_started, args=())
-        #            x.start()
-        #            stop(angle)
-        if urgent_break:
-            break
-        frame_count += 1
-        #        if frame_count < 2:
-        #            x = threading.Thread(target=car_started, args=())
-        #            x.start()
-        #            stop(angle)
         if listen_to_lines:
             if not is_brake:
                 forward(speed, angle)
@@ -898,10 +944,10 @@ try:
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
             cv2.imshow("test", cropped_image)
+            cv2.moveWindow('test', 0, 0)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
-            print(width, height)
             lines = reduce_invalid(lines, height, width)
             lines = reduce_horizontals2(lines)
             to_check_lines = None
@@ -913,6 +959,7 @@ try:
 
                 combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                 cv2.imshow("result", combo_image)
+                cv2.moveWindow('result', 600, 0)
                 count = 1
             else:
                 if count < 2:
@@ -927,11 +974,7 @@ try:
             if to_check_lines is not None:
                 if len(speed_accuracy_stack) < 6:
                     speed_accuracy_stack.append(to_check_lines[0:2])
-
-                if len(speed_accuracy_stack) > 1 and not all_are_the_same_or_near(speed_accuracy_stack):
-                    base_speed = backup_base_speed
-                    speed_accuracy_stack = []
-                    if 0 <= increase_speed > -max_increase_speed:
+                    if 0 >= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
                     elif increase_speed > 0:
                         increase_speed = 0
@@ -939,9 +982,17 @@ try:
                         stop_lights_on()
                     else:
                         stop_lights_off()
+                if len(speed_accuracy_stack) > 2 and not all_are_the_same_or_near(speed_accuracy_stack):
+                    base_speed = backup_base_speed
+                    speed_accuracy_stack = []
                 elif len(speed_accuracy_stack) >= 6:
                     if increase_speed < max_increase_speed:
-                        increase_speed += 0.5
+                        if len(to_check_lines) >= 2:
+                            if -5 < angle < 5:
+                                do_nothing()
+                            else:
+                                increase_speed += 0.5
+                                print('increase')
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if len(to_check_lines) == 3:
@@ -956,14 +1007,31 @@ try:
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
-                    if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
-                            height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
+                    if waiting_for_stop and height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
+                            height * horizontal_zone_from < y1 <= height * horizontal_zone_to and \
+                            (x1 > width / 2 or abs(x1 - x2) > 150):
+                        do_nothing()
                         stop_stack.append(True)
+                    elif not waiting_for_stop:
+                        if first_load_files:
+                            parking_file = cv2.CascadeClassifier('cascade.xml')
+                            stop_file = cv2.CascadeClassifier('stop.xml')
+                            first_load_files = False
+                        gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
+                        aa = findSign(gray)
+
+                        if aa is not None:
+                            parking_sign_stack.append(None)
+                        else:
+                            parking_sign_stack = []
+                        if len(parking_sign_stack) >= 3:
+                            parking_action()
+                        # _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
                     else:
                         stop_stack = []
                     if len(stop_stack) >= 3:
                         stop_stack = []
-                        wait_time = avg(y2, y1) / 500
+                        wait_time = 0
                         if space:
                             space_direction = guess_space_direction(to_check_lines[0:2])
                             if space_direction == constant.LEFT:
@@ -975,8 +1043,9 @@ try:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
                         x.start()
 
-                        action_index += 1
-                        print(action_index, len(const_actions))
+                        if const_actions[action_index] == constant.FORWARD:  # forward is 3-th element in scenario
+                            y = threading.Thread(target=car_in_parking_zone, args=())
+                            y.start()
                         if action_index >= len(const_actions):
                             while x.isAlive():
                                 do_nothing()
@@ -989,12 +1058,12 @@ try:
                         test_var = new_angle(to_check_lines)
                         space = process_lines_spaces(test_var)
                         angle = validate_angle(convert_space_to_angle(space, calculated_angle))
-                        print(speed, angle, space, calculated_angle)
+                        print(calculated_angle, angle, space, speed, 'ass')
                 speed = prepare_speed(angle)
                 last_valid_angle = angle
-                if -5 < angle < 5:
+                if -5.0 < angle < 5.0:
                     speed = base_speed
-                if speed < -5:
+                if speed < -5.0:
                     back_mode_on()
                 else:
                     back_mode_off()
@@ -1002,6 +1071,7 @@ try:
             else:
                 angle = last_valid_angle
                 speed = prepare_speed(angle)
+                no_lines_action()
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
                 if c_key == ord('q'):
