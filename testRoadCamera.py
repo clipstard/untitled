@@ -7,8 +7,8 @@ import threading
 import _thread
 
 const_actions = [
-#    constant.RIGHT,
-#    constant.LEFT,
+    constant.RIGHT,
+    constant.LEFT,
     constant.FORWARD,
     constant.RIGHT,
     constant.LEFT,
@@ -44,23 +44,27 @@ def after_stop_left(move_specific=None):
     forward(local_speed + 3, -22.0)
     wait(3.3)
     forward(0.0)
+    wait(0.2)
     do_nothing()
 
 
 def after_stop_right(move_specific=None):
-    local_speed = 14.5
+    local_speed = 15.6
     forward(local_speed)
-    wait(0.5)
+    wait(0.7)
     forward(local_speed, 22)
     wait(3.1)
     forward(0.0)
+    wait(0.2)
     do_nothing()
 
 
 def parking_action():
     global waiting_for_stop
-    
-    local_speed = 18
+    global parked
+    parked = True
+    print('i am parking --------------------------------------')
+    local_speed = 16
     forward(-local_speed + 1)
     wait(0.1)
     forward(-local_speed + 1, 22)
@@ -94,7 +98,7 @@ def parking_action():
 
 
 def after_stop_forward():
-    forward(17.5)
+    forward(16.5, -2)
     wait(2)
     do_nothing()
 
@@ -182,11 +186,15 @@ def normalize_line(line):
 
 def make_sum(array):
     sum = 0
+    c = 0
     if array is None:
         return 0
     for item in array:
         sum += item
-    return sum
+        c+=1
+    if c:
+        return sum/c
+    return 0
 
 
 def calculate_angle(lines):
@@ -201,9 +209,9 @@ def calculate_angle(lines):
                 if x is None:
                     continue
                 x1, y1, x2, y2 = x
-                if abs(y1 - y2) < 15:
+                if abs(y1 - y2) < 25:
                     continue
-                just = float(x2 - x1) / float(y1 - y2)
+                just = float(abs(x2) - abs(x1)) / float(abs(y1) - abs(y2))
                 angles.append(just)
     return make_sum(angles)
 
@@ -419,7 +427,6 @@ def average_slope_intercept(image, lines):
     left_is_interrupted = False
     right_is_interrupted = False
     summarized_lines = summarize_lines(lines)
-    summarized_lines = reduce_horizontals2(summarized_lines)
     for line in summarized_lines:
         x1, y1, x2, y2 = line.reshape(4)
         parameters = np.polyfit((x1, x2), (y1, y2), 1)
@@ -642,10 +649,7 @@ def new_angle(lines):
     if len(lines) == 2:
         left_line, right_line = lines
         if left_line is not None and right_line is not None:
-            rx1, ry1, rx2, ry2 = right_line
-            lx1, ly1, lx2, ly2 = left_line
-            coefficients[0] = lx1
-            coefficients[1] = width - rx1
+            do_nothing()
         elif right_line is not None:
             rx1, ry1, rx2, ry2 = right_line
             coefficients[1] = (width - rx1)
@@ -683,23 +687,30 @@ def convert_space_to_angle(space, calculated_coefficient):
         sign = -1
     else:
         sign = 1
-    if -1 < calculated_coefficient < 1:
+    if -0.35 < calculated_coefficient < 0.35:
+        calculated_coefficient = abs(calculated_coefficient * (angle_coefficient * 1.2))
+    elif -1 < calculated_coefficient < 1:
         space = space * 2.5
-        calculated_coefficient = abs(calculated_coefficient * 8.5)
+        calculated_coefficient = abs(calculated_coefficient * angle_coefficient)
     else:
         space = space * 1.5
-        calculated_coefficient = abs(calculated_coefficient * 9.5)
+        calculated_coefficient = abs(calculated_coefficient * angle_coefficient)
     if calculated_coefficient > 23:
         calculated_coefficient = 23
-    aux = (calculated_coefficient * sign + float(space / 55))
+    aux = (calculated_coefficient * sign - float(space / 60))
+#    aux = calculated_coefficient * sign
     return validate_angle(aux)
 
 
 def validate_angle(c_angle):
     if c_angle >= 22:
-        return 23
+        return 21.5
     if c_angle <= -22.5:
         return -22
+    if c_angle > 1.5:
+        return c_angle - 1.5
+    if float(-6) < c_angle < 0:
+        c_angle += 2
     return c_angle
 
 
@@ -727,6 +738,8 @@ def all_are_the_same_or_near(lines):
         return False
     reference = lines[0]
 
+    if reference is None:
+        return all_are_the_same_or_near(pop_first(lines))
     if len(reference) < 2:
         return False
     l_ref, r_ref = reference[0:2]
@@ -734,13 +747,17 @@ def all_are_the_same_or_near(lines):
     r_flag = False
     for i in range(1, len(lines)):
         l_line, r_line = lines[i][0:2]
+        if l_ref is None and l_line is None:
+            l_flag = True
+        if r_ref is None and r_line is None:
+            r_flag = True
         if (l_ref is None and l_line is not None) or (l_ref is not None and l_line is None):
             l_flag = True
         if (r_ref is None and r_line is not None) or (r_ref is not None and r_line is None):
             r_flag = True
-        if l_ref is not None and l_line is not None and abs(l_ref[0] - l_line[0]) < 40:
+        if l_ref is not None and l_line is not None and abs(abs(l_ref[0]) - abs(l_line[0])) < 45:
             l_flag = True
-        if r_ref is not None and r_line is not None and abs(r_ref[0] - r_line[0]) < 40:
+        if r_ref is not None and r_line is not None and abs(abs(r_ref[0]) - abs(r_line[0])) < 45:
             r_flag = True
 
     return l_flag and r_flag
@@ -788,6 +805,7 @@ def guess_space_direction(lines):
 
 def car_in_parking_zone():
     global waiting_for_stop
+    wait(10)
     waiting_for_stop = False
     do_nothing()
     # listen for parking sign
@@ -798,15 +816,11 @@ def car_in_parking_zone():
 def findSign(gray):
     global parking_file, stop_file
     res = None
-    if parking_file is None or stop_file is None:
+    if parking_file is None:
         return None
     parkingi = parking_file.detectMultiScale(gray, 1.1, 5)
-    stopi = stop_file.detectMultiScale(gray, 1.1, 5)
     for i, (x, y, w, h) in enumerate(parkingi):
         res = ["Parking sign", x, y, x + w, y + h]
-
-    for i, (x, y, w, h) in enumerate(stopi):
-        res = ["Stop sign", x, y, x + w, y + h]
 
     if res is not None:
         return res
@@ -829,7 +843,8 @@ def process_sign(data):
         title, x1, y1, w, h = data
         real_w = w - x1
         real_h = h - y1
-        if real_w > 90 and real_h > 90:
+        print(data)
+        if real_w >= 60 and real_h >= 60:
             return True
     return False
 
@@ -847,8 +862,8 @@ stop_stack = []
 last_valid_angle = 0
 close_thread = False
 threads_off = False
-max_increase_speed = 3.5
-speed_const = 15
+max_increase_speed = 3
+speed_const = 15.5
 horizontal_zone_from = 0.75
 horizontal_zone_to = 0.9
 count = 0
@@ -863,7 +878,7 @@ decision = 0.0
 action_index = 0
 max = 0
 min = 100
-angle_coefficient = 10.5
+angle_coefficient = 11.5
 is_brake = False
 frame_count = 0
 speed_accuracy_stack = []
@@ -875,7 +890,7 @@ spacing = [None, None]
 waiting_for_stop = True
 first_load_files = True
 parking_sign_stack = []
-
+parked = False
 
 # Diff section
 from picamera.array import PiRGBArray
@@ -998,6 +1013,32 @@ def init_gpi():
     GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
 
 
+def all_lights_on():
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    stop_lights_on()
+    blue_light_on()
+    night_light_on()
+
+
+def all_lights_off():
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    stop_lights_off()
+    blue_light_off()
+    night_light_off()
+
+
+def stop_car_control():
+    all_lights_on()
+    wait(0.25)
+    all_lights_off()
+    wait(0.45)
+    all_lights_on()
+    wait(0.35)
+    all_lights_off()
+    
+    
 def test_program():
     signaling_left()
     forward(19.0, 0.0)
@@ -1048,8 +1089,8 @@ try:
                 forward(0.0, angle)
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
-            cv2.imshow("test", cropped_image)
-            cv2.moveWindow('test', 0, 0)
+#            cv2.imshow("test", cropped_image)
+#            cv2.moveWindow('test', 0, 0)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
             width = frame.shape[1]
@@ -1060,10 +1101,10 @@ try:
             if averaged_lines is not None:
                 to_check_lines = make_average_lines(last_lines, averaged_lines)
                 last_lines = averaged_lines
-                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-
-                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-                cv2.imshow("result", combo_image)
+#                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
+#
+#                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+                cv2.imshow("result", frame)
                 cv2.moveWindow('result', 600, 0)
                 count = 1
             else:
@@ -1077,8 +1118,8 @@ try:
                     combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
                     cv2.imshow("result", combo_image)
             if to_check_lines is not None:
-                if len(speed_accuracy_stack) < 6:
-                    speed_accuracy_stack.append(to_check_lines[0:2])
+                speed_accuracy_stack.append(to_check_lines[0:2])
+                if len(speed_accuracy_stack) < 5:
                     if 0 >= increase_speed > -max_increase_speed:
                         increase_speed -= 0.5
                     elif increase_speed > 0:
@@ -1088,18 +1129,26 @@ try:
                     else:
                         stop_lights_off()
                 if len(speed_accuracy_stack) > 2 and not all_are_the_same_or_near(speed_accuracy_stack):
-                    base_speed = backup_base_speed
+                    do_nothing()
                     speed_accuracy_stack = []
-                elif len(speed_accuracy_stack) >= 6:
+                elif len(speed_accuracy_stack) >= 5:
                     if increase_speed < max_increase_speed:
-                        if float(-4) < angle < float(5):
+                        if float(-6) < angle < float(8):
+                            increase_speed = 0
+                            if -6.0 < angle < 0:
+                                angle +=1
                             do_nothing()
                         else:
-                            increase_speed += 0.5
+                            increase_speed += 0.25
                             print('increase')
                     speed_accuracy_stack = pop_first(speed_accuracy_stack)
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
-                if len(to_check_lines) == 3:
+                if waiting_for_stop and not parked:
+                    if const_actions[action_index - 1] == constant.FORWARD:  # forward is 3-th element in scenario
+                        y = threading.Thread(target=car_in_parking_zone, args=())
+                        y.start()
+                if waiting_for_stop and len(to_check_lines) == 3:
+
                     x1 = 0
                     x2 = 0
                     y1 = 0
@@ -1111,26 +1160,11 @@ try:
                         x1, y1, x2, y2 = line
                     except:
                         print('here')
-                    if waiting_for_stop and height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
+                    if height * horizontal_zone_from < y2 <= height * horizontal_zone_to and \
                             height * horizontal_zone_from < y1 <= height * horizontal_zone_to:
                         do_nothing()
-                        print(line)
                         stop_stack.append(True)
-                    elif not waiting_for_stop:
-                        if first_load_files:
-                            parking_file = cv2.CascadeClassifier('cascade.xml')
-                            stop_file = cv2.CascadeClassifier('stop.xml')
-                            first_load_files = False
-                        gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
-                        aa = findSign(gray)
 
-                        if aa is not None:
-                            parking_sign_stack.append(process_sign(aa))
-                        else:
-                            parking_sign_stack = []
-                        if len(parking_sign_stack) >= 3:
-                            if all_are_true(parking_sign_stack):
-                                parking_action()
                         # _thread.start_new_thread(desenare_linii, ("Detectare_semne", aa))
                     else:
                         stop_stack = []
@@ -1148,14 +1182,29 @@ try:
                         x = threading.Thread(target=move_in_intersection, args=(constant.STOP, wait_time, spacing,))
                         x.start()
 
-                        if const_actions[action_index - 1] == constant.FORWARD:  # forward is 3-th element in scenario
-                            y = threading.Thread(target=car_in_parking_zone, args=())
-                            y.start()
                         if action_index >= len(const_actions):
                             while x.isAlive():
                                 do_nothing()
                             break
                         do_nothing()
+                elif not waiting_for_stop and not parked:
+                    print('waiting for park')
+                    if first_load_files:
+                        parking_file = cv2.CascadeClassifier('cascade.xml')
+                        first_load_files = False
+                    gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
+                    aa = findSign(gray)
+
+                    if aa is not None:
+                        print('found it -----------')
+                        parking_sign_stack.append(process_sign(aa))
+                    else:
+                        parking_sign_stack = []
+                    if len(parking_sign_stack) >= 2:
+                        if all_are_true(parking_sign_stack):
+                            parking_action()
+                        else:
+                            parking_sign_stack = []
                 if 1000 < calculated_angle < 15000:
                     angle = 0.0
                 else:
@@ -1164,18 +1213,19 @@ try:
                         space = process_lines_spaces(test_var)
                         angle = validate_angle(convert_space_to_angle(space, calculated_angle))
                         print(calculated_angle, angle, space, speed, 'ass')
+                if -max_increase_speed >= increase_speed or max_increase_speed <= increase_speed:
+                    increase_speed = 0
                 speed = prepare_speed(angle)
+                
                 last_valid_angle = angle
-                if -5.0 < angle < 5.0:
-                    speed = base_speed
                 if speed < -5.0:
                     back_mode_on()
                 else:
                     back_mode_off()
 
             else:
-                angle = last_valid_angle
-                speed = prepare_speed(angle)
+                forward(15, 2.5)
+                print('i do ')
 #                no_lines_action()
                 cv2.imshow("result", frame)
                 c_key = cv2.waitKey(1)
@@ -1200,6 +1250,7 @@ except Exception as ex:
     print(ex)
     stop()
     cv2.destroyAllWindows()
-blue_light_off()
+stop_thread = threading.Thread(target=stop_car_control, args=())
+stop_thread.start()
 stop()
 threads_off = True

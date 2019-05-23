@@ -71,6 +71,7 @@ def canny(image):
     canny = cv2.Canny(blur, 0, 255)
     return canny
 
+
 def region_of_interest(image):
     height = image.shape[0]
     width = image.shape[1]
@@ -98,7 +99,7 @@ default_angle = 19.0
 default_large_angle = 23.0
 default_speed = 17.0
 speed = 0.0
-angle = 0.0
+angle = -1.5
 
 ##forward(17.0, 0.0)
 ##time.sleep(0.4)
