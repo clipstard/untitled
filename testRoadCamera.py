@@ -512,10 +512,10 @@ def region_of_interest(image):
     height = image.shape[0]
     width = image.shape[1]
     polygons = np.array([
-        [(-140, height),
-         (0 + int(width / 6), int(height) - int(height / 2)),
-         (width - int(width / 6), int(height) - int(height / 2)),
-         (width + 140, height)]
+        [(0, height),
+         (0 + int(width / 6), int(height) - int(height / 3)),
+         (width - int(width / 6), int(height) - int(height / 3)),
+         (width, height)]
     ])
     # *******
     vid = np.array([
@@ -816,12 +816,16 @@ def car_in_parking_zone():
 def findSign(gray):
     global parking_file, stop_file
     res = None
-    if parking_file is None:
+    if parking_file is None or stop_file is None:
         return None
     parkingi = parking_file.detectMultiScale(gray, 1.1, 5)
+    stopingi = stop_file.detectMultiScale(gray, 1.1, 5)
     for i, (x, y, w, h) in enumerate(parkingi):
         res = ["Parking sign", x, y, x + w, y + h]
 
+    for i, (x, y, w, h) in enumerate(stopingi):
+        res = ["Stop sign", x, y, x + w, y + h]
+        
     if res is not None:
         return res
     return None
@@ -890,6 +894,7 @@ spacing = [None, None]
 waiting_for_stop = False
 first_load_files = True
 parking_sign_stack = []
+stop_sign_stack = []
 parked = False
 
 # Diff section
@@ -914,7 +919,7 @@ def stop(angle=0.0):
 
 def count2():
     global close_thread
-    wait(2)
+    wait(10)
     close_thread = True
     return True
 
@@ -923,27 +928,42 @@ def event_listener():
     global threads_off
     global close_thread
     import serial
-    #    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
+    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
     aux_thread = threading.Thread(target=count2, args=())
     aux_thread.start()
+    blue_light_on()
     while True:
+        wait(0.05)
         if threads_off or close_thread:
             break
-        #        message = usb_com.readline()
-        message = "123"
+        message = usb_com.readline()
+#        message = message.strip()
+#        print(message, '+ ', constant.IS_DAY)
+        print(message)
         if message == constant.IS_DAY:
+            print('day')
             night_light_off()
             do_nothing()
         if message == constant.IS_NIGHT:
+            print('night')
             night_light_on()
+            
+            wait(2)
             do_nothing()
         if message == constant.OBJECT_IN_BACK:
+            forward(19, 0.0)
+            wait(1)
+            stop()
             # object detected function
             do_nothing()
         if message == constant.OBJECT_IN_FRONT:
+            forward(-20, 0.0)
+            wait(1)
+            stop()
             # object detected function
             do_nothing()
     print('thread closed')
+    blue_light_off()
 
 
 def signaling_left():
@@ -1077,6 +1097,22 @@ def imit_parking():
     wait(0.45)
     GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
     GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    
+def imit_stop():
+    stop_lights_on()
+    back_mode_on()
+    wait(1.5)
+    stop_lights_off()
+    back_mode_off()
+    
+def desenare_linii(thread_title,aa):
+    global frame
+    if len(aa)>3:
+        cv2.rectangle(frame, (aa[1], aa[2]), (aa[3], aa[4]), (0, 255, 0), 3)
+        cv2.putText(frame, aa[0], (aa[3], aa[4]), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (0, 0, 255), lineType=cv2.LINE_AA)
+    else:
+        print(None)
+        
 
 
 serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
@@ -1089,7 +1125,6 @@ time.sleep(0.1)
 init_gpi()
 try:
     blue_light_on()
-    event_listener()
     for camera_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         frame = camera_frame.array
 
@@ -1104,7 +1139,7 @@ try:
                 forward(0.0, angle)
             canny_image = canny(frame)
             cropped_image = region_of_interest(canny_image)
-#            cv2.imshow("test", cropped_image)
+            cv2.imshow("test", cropped_image)
 #            cv2.moveWindow('test', 0, 0)
             lines = cv2.HoughLinesP(cropped_image, 2, (np.pi / 180), 100, np.array([]), minLineLength=20, maxLineGap=10)
             height = frame.shape[0]
@@ -1116,10 +1151,9 @@ try:
             if averaged_lines is not None:
                 to_check_lines = make_average_lines(last_lines, averaged_lines)
                 last_lines = averaged_lines
-#                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
-#
-#                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-                cv2.imshow("result", frame)
+                line_image = display_average_lines(frame, to_check_lines, lines_interrupted)
+                combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+                cv2.imshow("result", combo_image)
                 cv2.moveWindow('result', 600, 0)
                 count = 1
             else:
@@ -1206,19 +1240,34 @@ try:
                     print('waiting for park')
                     if first_load_files:
                         parking_file = cv2.CascadeClassifier('cascade.xml')
+                        stop_file = cv2.CascadeClassifier('stop.xml')
                         first_load_files = False
-                    gray = cv2.cvtColor(combo_image, cv2.COLOR_BGR2GRAY)
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                     aa = findSign(gray)
 
                     if aa is not None:
-                        print('found it -----------')
-                        parking_sign_stack.append(process_sign(aa))
+                        desenare_linii('test', aa)
+                        cv2.imshow("result", frame)
+                        if aa[0] == 'Stop sign':
+                            stop_sign_stack.append(process_sign(aa))
+                        else:
+                            parking_sign_stack.append(process_sign(aa))
                     else:
                         parking_sign_stack = []
+                        stop_sign_stack = []
+                    if len(stop_sign_stack) >= 2:
+                        if all_are_true(stop_sign_stack):
+                            stop_sign_stack = []
+                            imit_stop()
+                        
+                        else:
+                            stop_sign_stack = []
                     if len(parking_sign_stack) >= 2:
                         if all_are_true(parking_sign_stack):
+                            parking_sign_stack = []
                             # parking_action()
                             imit_parking()
+                            cv2.imshow
                         else:
                             parking_sign_stack = []
                 if 1000 < calculated_angle < 15000:
@@ -1269,4 +1318,7 @@ except Exception as ex:
 stop_thread = threading.Thread(target=stop_car_control, args=())
 stop_thread.start()
 stop()
+
+
+event_listener()
 threads_off = True

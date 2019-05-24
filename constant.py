@@ -11,10 +11,10 @@ RIGHT_YELLOW = 'right_yellow'
 STOP_LIGHT = 'stop_light'
 NIGHT_LIGHT = 'night_light'
 BACK_LIGHT = 'back_light'
-IS_DAY = "b'Zi\\r\\n'"
-IS_NIGHT = "b'Noapte\\r\\n'"
-OBJECT_IN_FRONT = "b'Obiect in fata\\r\\n'"
-OBJECT_IN_BACK = "b'Obiect in fata\\r\\n'"
+IS_DAY = "b\'day_time:0\\n\'"
+IS_NIGHT = "b\'day_time:1\\n\'"
+OBJECT_IN_FRONT = "b'sens_fata:1\\n'"
+OBJECT_IN_BACK = "b'sens_spate:1\\n'"
 
 signals = {
     'blue_light': 19,
