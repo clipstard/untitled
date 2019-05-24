@@ -114,20 +114,20 @@ def move_in_intersection(direction, delay=0.0, move_specific=None):
         listen_to_lines = False
         x_thread = threading.Thread(target=signaling_left, args=())
         x_thread.start()
-        after_stop_left(move_specific)
+        # after_stop_left(move_specific)
         listen_to_lines = True
     elif direction == constant.RIGHT and not threads_off:
 
         listen_to_lines = False
         x_thread = threading.Thread(target=signaling_right, args=())
         x_thread.start()
-        after_stop_right(move_specific)
+        # after_stop_right(move_specific)
         listen_to_lines = True
     elif direction == constant.FORWARD and not threads_off:
 
         listen_to_lines = False
-        forward(17.0)
-        wait(2.50)
+        # forward(17.0)
+        # wait(2.50)
         listen_to_lines = True
     elif direction == constant.STOP and not threads_off:
         wait(delay)
@@ -879,7 +879,7 @@ action_index = 0
 max = 0
 min = 100
 angle_coefficient = 11.5
-is_brake = False
+is_brake = True
 frame_count = 0
 speed_accuracy_stack = []
 listen_to_lines = True
@@ -887,7 +887,7 @@ urgent_break = False
 space = 0
 space_direction = constant.FORWARD
 spacing = [None, None]
-waiting_for_stop = True
+waiting_for_stop = False
 first_load_files = True
 parking_sign_stack = []
 parked = False
@@ -903,7 +903,7 @@ GPIO.setwarnings(False)
 
 
 def forward(speed, angle=0.0):
-    serialHandler.sendMove(speed, angle)
+    serialHandler.sendMove(0.0, angle)
     do_nothing()
 
 
@@ -1064,6 +1064,21 @@ def test_parking():
     listen_to_lines = True
 
 
+def imit_parking():
+    wait(0.1)
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    wait(0.35)
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    wait(0.25)
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    wait(0.45)
+    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+
+
 serialHandler = SerialHandler.SerialHandler('/dev/ttyACM0')
 serialHandler.startReadThread()
 camera = PiCamera()
@@ -1145,7 +1160,7 @@ try:
                 calculated_angle = calculate_angle(convert_numpy_to_array(to_check_lines))
                 if waiting_for_stop and not parked:
                     if const_actions[action_index - 1] == constant.FORWARD:  # forward is 3-th element in scenario
-                        y = threading.Thread(target=car_in_parking_zone, args=())
+                        y = threading.Thread(target=do_nothing, args=())
                         y.start()
                 if waiting_for_stop and len(to_check_lines) == 3:
 
@@ -1202,7 +1217,8 @@ try:
                         parking_sign_stack = []
                     if len(parking_sign_stack) >= 2:
                         if all_are_true(parking_sign_stack):
-                            parking_action()
+                            # parking_action()
+                            imit_parking()
                         else:
                             parking_sign_stack = []
                 if 1000 < calculated_angle < 15000:
