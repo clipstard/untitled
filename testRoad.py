@@ -922,7 +922,7 @@ def stop(angle=0.0):
     do_nothing()
 
 
-# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 # cap = cv2.VideoCapture('video5.mp4')
 cap = cv2.VideoCapture('screencasts/12b.mkv')
 # cap = cv2.VideoCapture('homerace.mkv')
