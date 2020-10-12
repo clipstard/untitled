@@ -814,20 +814,6 @@ def car_in_parking_zone():
 
 
 def findSign(gray):
-    global parking_file, stop_file
-    res = None
-    if parking_file is None or stop_file is None:
-        return None
-    parkingi = parking_file.detectMultiScale(gray, 1.1, 5)
-    stopingi = stop_file.detectMultiScale(gray, 1.1, 5)
-    for i, (x, y, w, h) in enumerate(parkingi):
-        res = ["Parking sign", x, y, x + w, y + h]
-
-    for i, (x, y, w, h) in enumerate(stopingi):
-        res = ["Stop sign", x, y, x + w, y + h]
-        
-    if res is not None:
-        return res
     return None
 
 
@@ -843,13 +829,6 @@ def desenare_linii(thread_title, aa):
         
         
 def process_sign(data):
-    if data is not None:
-        title, x1, y1, w, h = data
-        real_w = w - x1
-        real_h = h - y1
-        print(data)
-        if real_w >= 60 and real_h >= 60:
-            return True
     return False
 
 
@@ -901,10 +880,10 @@ parked = False
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import SerialHandler
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setwarnings(False)
 
 
 def forward(speed, angle=0.0):
@@ -927,123 +906,125 @@ def count2():
 def event_listener():
     global threads_off
     global close_thread
-    import serial
-    usb_com = serial.Serial('/dev/ttyUSB0', 9600)
-    aux_thread = threading.Thread(target=count2, args=())
-    aux_thread.start()
-    blue_light_on()
-    while True:
-        wait(0.05)
-        if threads_off or close_thread:
-            break
-        message = usb_com.readline()
-#        message = message.strip()
-#        print(message, '+ ', constant.IS_DAY)
-        print(message)
-        if message == constant.IS_DAY:
-            print('day')
-            night_light_off()
-            do_nothing()
-        if message == constant.IS_NIGHT:
-            print('night')
-            night_light_on()
-            
-            wait(2)
-            do_nothing()
-        if message == constant.OBJECT_IN_BACK:
-            forward(19, 0.0)
-            wait(1)
-            stop()
-            # object detected function
-            do_nothing()
-        if message == constant.OBJECT_IN_FRONT:
-            forward(-20, 0.0)
-            wait(1)
-            stop()
-            # object detected function
-            do_nothing()
-    print('thread closed')
-    blue_light_off()
+#     import serial
+#     usb_com = serial.Serial('/dev/ttyUSB0', 9600)
+#     aux_thread = threading.Thread(target=count2, args=())
+#     aux_thread.start()
+#     blue_light_on()
+#     while True:
+#         wait(0.05)
+#         if threads_off or close_thread:
+#             break
+#         message = usb_com.readline()
+# #        message = message.strip()
+# #        print(message, '+ ', constant.IS_DAY)
+#         print(message)
+#         if message == constant.IS_DAY:
+#             print('day')
+#             night_light_off()
+#             do_nothing()
+#         if message == constant.IS_NIGHT:
+#             print('night')
+#             night_light_on()
+#
+#             wait(2)
+#             do_nothing()
+#         if message == constant.OBJECT_IN_BACK:
+#             forward(19, 0.0)
+#             wait(1)
+#             stop()
+#             # object detected function
+#             do_nothing()
+#         if message == constant.OBJECT_IN_FRONT:
+#             forward(-20, 0.0)
+#             wait(1)
+#             stop()
+#             # object detected function
+#             do_nothing()
+#     print('thread closed')
+#     blue_light_off()
+    do_nothing()
 
 
 def signaling_left():
-    for i in range(0, 2):
-        GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
-        wait(0.5)
-        GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
-        wait(0.5)
+    # for i in range(0, 2):
+    #     GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    #     wait(0.5)
+    #     GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    #     wait(0.5)
     do_nothing()
 
 
 def signaling_right():
-    for i in range(0, 2):
-        GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
-        wait(0.5)
-        GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
-        wait(0.5)
+    # for i in range(0, 2):
+    #     GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    #     wait(0.5)
+    #     GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    #     wait(0.5)
     do_nothing()
 
 
 def stop_lights_on():
-    GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
 def stop_lights_off():
-    GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.STOP_LIGHT], GPIO.LOW)
     do_nothing()
 
 
 def blue_light_on():
-    GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
 def blue_light_off():
-    GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.BLUE_LIGHT], GPIO.LOW)
     do_nothing()
 
 
 def night_light_on():
-    GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
 def night_light_off():
-    GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.NIGHT_LIGHT], GPIO.LOW)
     do_nothing()
 
 
 def back_mode_on():
-    GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.HIGH)
     do_nothing()
 
 
 def back_mode_off():
-    GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.BACK_LIGHT], GPIO.LOW)
     do_nothing()
 
 
 def init_gpi():
-    GPIO.setup(constant.signals[constant.BACK_LIGHT], GPIO.OUT)
-    GPIO.setup(constant.signals[constant.NIGHT_LIGHT], GPIO.OUT)
-    GPIO.setup(constant.signals[constant.BLUE_LIGHT], GPIO.OUT)
-    GPIO.setup(constant.signals[constant.STOP_LIGHT], GPIO.OUT)
-    GPIO.setup(constant.signals[constant.RIGHT_YELLOW], GPIO.OUT)
-    GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.BACK_LIGHT], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.NIGHT_LIGHT], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.BLUE_LIGHT], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.STOP_LIGHT], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.RIGHT_YELLOW], GPIO.OUT)
+    # GPIO.setup(constant.signals[constant.LEFT_YELLOW], GPIO.OUT)
+    do_nothing()
 
 
 def all_lights_on():
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
     stop_lights_on()
     blue_light_on()
     night_light_on()
 
 
 def all_lights_off():
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
     stop_lights_off()
     blue_light_off()
     night_light_off()
@@ -1085,18 +1066,19 @@ def test_parking():
 
 
 def imit_parking():
-    wait(0.1)
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
-    wait(0.35)
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
-    wait(0.25)
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
-    wait(0.45)
-    GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
-    GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    # wait(0.1)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    # wait(0.35)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    # wait(0.25)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.HIGH)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.HIGH)
+    # wait(0.45)
+    # GPIO.output(constant.signals[constant.LEFT_YELLOW], GPIO.LOW)
+    # GPIO.output(constant.signals[constant.RIGHT_YELLOW], GPIO.LOW)
+    do_nothing()
     
 def imit_stop():
     stop_lights_on()
@@ -1267,7 +1249,7 @@ try:
                             parking_sign_stack = []
                             # parking_action()
                             imit_parking()
-                            cv2.imshow
+                            cv2.imshow("result", frame)
                         else:
                             parking_sign_stack = []
                 if 1000 < calculated_angle < 15000:
