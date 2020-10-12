@@ -23,6 +23,14 @@ angle = -1.15
 moveAllowed=True
 
 def forward(pwm, angle=0.0):
+    if pwm >= 24.0:
+        pwm = 23.0
+    if pwm <= -24.0:
+        pwm = -23.0
+    if angle >= 25.0:
+        angle = 24.0
+    if angle <= 25.0:
+        angle = 24.0
     serialHandler.sendMove(pwm, float(angle))
     
     
@@ -37,7 +45,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     # grab the raw NumPy array representing the image, then initialize the timestamp
     # and occupied/unoccupied text
     if moveAllowed:
-        forward(speed, angle)
+        forward(speed + adjusted_speed, angle)
     else:
         stop(angle)
     image = frame.array
@@ -52,40 +60,50 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     if key == ord("z"): 
         break
     if key == ord("w"):
-        speed += 1
+        speed += 1.0
     if key == ord("s"):
-        speed -= 1
+        speed -= 1.0
+    if key == ord("y"):
+        speed +=0.5
+    if key == ord("h"):
+        speed -= 0.5
     if key == ord("a"):
         if angle == 0.0 or angle == -default_large_angle:
             angle = -default_angle
-        elif angle == default_angle or default_large_angle:
+            adjusted_speed = 1.5
+        elif angle == default_angle or angle == default_large_angle:
             angle = 0.0
+            adjusted_speed = 0.0
     if key == ord("d"):
         if angle == 0.0 or angle == default_large_angle:
             angle = default_angle
+            adjusted_speed = 1.5
         elif angle == -default_angle or angle == -default_large_angle:
             angle = 0.0
+            adjusted_speed = 0.0
     if key == ord("q"):
         if angle == 0.0 or angle == -default_angle:
             angle = - default_large_angle
+            adjusted_speed = 1.5
         elif angle == default_angle or angle == default_large_angle:
             angle = 0.0
+            adjusted_speed = 0.0
     if key == ord("e"):
         if angle == 0.0 or angle == default_angle:
             angle = default_large_angle
+            adjusted_speed = 1.5
         elif angle == -default_angle or angle == -default_large_angle:
             angle = 0.0
+            adjusted_speed = 0.0
     if key == ord("r"):
         oldSpeed = -speed
         stop(angle)
         time.sleep(0.5)
         forward(oldSpeed, angle)
         speed = oldSpeed
-    if key == ord("l"):
-        parking_action()
     if key == ord(" "):
         stop(0.0)
-        if moveAllowed ==True:
+        if moveAllowed:
             moveAllowed = False
         else:
             moveAllowed = True
