@@ -213,6 +213,7 @@ class MessageConverter:
     ReadThread class, it contains the functions which read incoming serial communication. 
 '''
 class ReadThread(threading.Thread):
+    chrs = ''
     '''
         CallbackEvent class, it contains the function for adding callbacks to events. 
     '''
@@ -263,7 +264,15 @@ class ReadThread(threading.Thread):
         self.printOut=f_printOut
         self.Responses=[]
         self.Waiters={}
+        self.speed = 0
+        self.previous = ''
+        self.brake = False
     
+    def getSpeed(self):
+        return self.speed
+    def do_nothing(self):
+        return None
+
     '''
         @name    run
         @brief   
@@ -278,10 +287,28 @@ class ReadThread(threading.Thread):
         @endcode
     '''
     def run(self):
+        stream = False
         while(self.Run):
             read_chr=self.serialCon.read()
             try:
                 read_chr=(read_chr.decode("ascii"))
+                if read_chr == ';':
+                    stream = False
+                    if (len(self.chrs)):
+                        old_speed = self.speed
+                        try:
+                            self.speed = float(self.chrs)
+
+                            #print(self.speed)
+                            #sys.stdout.write(self.speed)
+                        except Exception as ex:
+                            self.speed = old_speed
+                            self.do_nothing()
+                    self.chrs = ''
+                if stream:
+                    self.chrs += read_chr
+                if read_chr == ':':
+                    stream = True
                 if read_chr=='@':
                     self.isResponse=True
                     if len(self.buff)!=0:
@@ -295,8 +322,11 @@ class ReadThread(threading.Thread):
                 if self.isResponse:
                     self.buff+=read_chr
                 self.fileHandler.write(read_chr)    
-                if self.printOut:
-                    sys.stdout.write(read_chr)
+                #if self.printOut:
+                
+                        
+                    #print("SPEED: ", read_chr)
+                    #sys.stdout.write(read_chr)
             except UnicodeDecodeError:
                 pass
     '''
@@ -458,6 +488,7 @@ class FileHandler:
     SerialHandler class, it contains the functions for sending commands. 
 '''
 class SerialHandler:
+    speed = 0
 
     '''
         @name    __init__
@@ -478,8 +509,11 @@ class SerialHandler:
     def __init__(self,f_device_File='/dev/ttyACM0',f_history_file='historyFile.txt'):
         self.serialCon=serial.Serial(f_device_File,460800,timeout=1)
         self.historyFile=FileHandler(f_history_file)
-        self.readThread=ReadThread(1,self.serialCon,self.historyFile)
+        self.readThread=ReadThread(1,self.serialCon,self.historyFile, f_printOut=True)
         self.lock=threading.Lock()
+        
+    def getSpeed(self):
+        return self.readThread.getSpeed()
     '''
         @name    startReadThread
         @brief   
@@ -516,6 +550,9 @@ class SerialHandler:
         self.lock.acquire()
         self.serialCon.write(msg.encode('ascii'))
         self.lock.release()
+
+    def getSerialCon(self):
+        return self.serialCon
 
     '''
         @name    sendMove
